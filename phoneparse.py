@@ -19,6 +19,10 @@ def splitPublish(json_raw):
             #before it is published
             trio = Vector3()
 
+            #Let's publish from all the desired sensors!
+            #The list ccomprehension allows us to sift through the JSON packet
+            #and find the desired HyperIMU data
+            #because we stored the data stream names in sensorDict in the main
             for hyperIMUSensor in [key for key, val in sensorDict.items()]:
                 if hyperIMUSensor in decoded:
                     trio.x = float(decoded[hyperIMUSensor][0])
@@ -27,6 +31,39 @@ def splitPublish(json_raw):
                     print(trio)
 
                     #Still can use the sensorDict values (strings) to figure out where everything is going later
+
+#This function is run on multiple threads
+#It accepts HyperIMU information and calls splitPublish
+def clientrun(clientsocket, address):
+    while True:
+        try:
+            message = clientsocket.recv(8192)
+            splitPublish(message)
+        except Exception as e:
+            traceback.print_exc()
+            print(e)
+    clientsocket.close()
+
+
+def tcp_receive():
+    host = ''
+    port = 5555
+
+    #TCP connection! HyperIMU can only send JSON over TCP, not UDP
+    #put this block into a loop so that any disconnection will shut everything down
+    #and then resume listening
+    s = socket.socket()
+    s.bind((host, port))
+    print('Waiting for connection...')
+    s.listen(1)
+    while(1):
+        try:
+            c, addr = s.accept()
+            print("Connection received!")
+            _thread.start_new_thread(clientrun,(c,addr))
+        except Exception as e:
+            traceback.print_exc()
+            print(e)
 
 if __name__ == '__main__':
 
@@ -38,4 +75,7 @@ if __name__ == '__main__':
     sensorDict["K330 3-axis Accelerometer"] = "PhoneAccel"
     sensorDict["GPS"] = "PhoneGPS"
 
-    splitPublish(dummyjson)
+    #Uncomment this to just test the splitPublish function
+    #splitPublish(dummyjson)
+
+    tcp_receive()
