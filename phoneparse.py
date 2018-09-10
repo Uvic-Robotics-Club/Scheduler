@@ -9,6 +9,7 @@ import traceback, socket, json, _thread
 #(since all the phone sensors have 3 dimensions)
 #For now, this just prints the Vector3s
 #Figure out how to REALLY process them later
+#This function should only update the database class
 def splitPublish(json_raw):
     if len(json_raw) != 0:
             #Converting a JSON object into a Python dictionary
@@ -31,6 +32,12 @@ def splitPublish(json_raw):
                     print(trio)
 
                     #Still can use the sensorDict values (strings) to figure out where everything is going later
+
+#We need an object that is a bundle of Vector3s being continually update by splitPublish
+#Alternative: have splitPublish call all the methods that deal directly with the JSON data. Not good.
+#So we are going to want a data logger class
+#The data logger class will be mostly a bundle of Vector3s being continually replaced and also keeping logs of misc data
+#When the data logger class is updated, it needs to know what to alert
 
 #This function is run on multiple threads
 #It accepts HyperIMU information and calls splitPublish

@@ -3,6 +3,8 @@ import threading
 import queue
 from time import sleep, time
 
+from joy_control import *
+
 
 # Note: we can create objects and pass their methods into this object
 
@@ -97,12 +99,31 @@ class Demo_obj:
 		x = x * y
 
 
+class Temp:
+	def __init__(self, updateFunctions):
+		self.updateFunctions = updateFunctions
+		self.temp
+
+	def poll_function(self):
+		return Pq_obj(3, self.event_function)
+
+	def event_function(self):
+		for function in self.updateFunctions:
+			function(temp)
+
+
 def main():
 	functions = []
 	obj = Demo_obj(1.11)
 	functions.append(obj.poll_function)
-	obj = Demo_obj(1.414)
-	functions.append(obj.poll_function)
+	obj2 = Demo_obj(1.414)
+	functions.append(obj2.poll_function)
+	obj3 = Joy_control()
+	functions.append(obj3.poll_function)
+
+	obj4 = Temp(func1, func2, func3)
+	functions.append(obj4.poll_function)
+
 	shell = Shell(4, functions)
 	shell.run() # Start both loops
 	# sleep(6)
