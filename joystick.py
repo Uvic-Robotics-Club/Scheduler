@@ -49,13 +49,6 @@ while True:
             buttons[i] = 0
             print("Button {} released.".format(i))
 
+    # If you remove this line the code breaks. Don't ask me why
+    for event in pygame.event.get(): ''''''
 
-    for event in pygame.event.get():  # User did something
-
-        # Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
-        '''
-        if event.type == pygame.JOYBUTTONDOWN:
-            print("Joystick button pressed.")
-        if event.type == pygame.JOYBUTTONUP:
-            print("Joystick button released.")
-            '''

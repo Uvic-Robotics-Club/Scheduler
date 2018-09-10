@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9939eaf-e21f-4fc0-980b-55e55d1a26fc" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/joy_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/joy_control.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/phoneparse.py" beforeDir="false" afterPath="$PROJECT_DIR$/phoneparse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/joystick.py" beforeDir="false" afterPath="$PROJECT_DIR$/joystick.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shell.py" beforeDir="false" afterPath="$PROJECT_DIR$/shell.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,37 +18,25 @@
     <favorites_list name="Shell" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.43684897">
+    <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="phoneparse.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/phoneparse.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-207">
+                <state relative-caret-position="34">
                   <caret line="2" selection-start-line="2" selection-end-line="2" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="joystick.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="joystick.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/joystick.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="190">
-                  <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+                <state relative-caret-position="483">
+                  <caret line="53" selection-start-line="53" selection-end-line="53" />
                   <folding>
                     <element signature="e#0#17#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="joy_control.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/joy_control.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="17">
-                  <caret line="1" column="22" lean-forward="true" selection-start-line="1" selection-start-column="22" selection-end-line="1" selection-end-column="22" />
-                  <folding>
-                    <element signature="e#0#24#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -62,35 +51,29 @@
               </provider>
             </entry>
           </file>
+          <file leaf-file-name="shell.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/shell.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="228">
+                  <caret line="106" column="4" selection-start-line="106" selection-start-column="4" selection-end-line="106" selection-end-column="4" />
+                  <folding>
+                    <element signature="e#0#16#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
         </leaf>
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="joy_example_stripped.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/joy_example_stripped.py">
+          <file leaf-file-name="joy_control.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/joy_control.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="391">
-                  <caret line="23" column="46" lean-forward="true" selection-start-line="23" selection-start-column="46" selection-end-line="23" selection-end-column="46" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="joy_example.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/joy_example.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="340">
-                  <caret line="104" column="45" lean-forward="true" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="shell.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/shell.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="581">
-                  <caret line="107" column="45" lean-forward="true" selection-start-line="107" selection-start-column="45" selection-end-line="107" selection-end-column="45" />
+                <state relative-caret-position="211">
+                  <caret line="55" column="27" selection-start-line="55" selection-start-column="27" selection-end-line="55" selection-end-column="27" />
                   <folding>
-                    <element signature="e#0#16#0" expanded="true" />
+                    <element signature="e#58#82#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -108,11 +91,12 @@
       <list>
         <option value="$PROJECT_DIR$/shelltypes.py" />
         <option value="$PROJECT_DIR$/phoneparse.py" />
-        <option value="$PROJECT_DIR$/joy_control.py" />
-        <option value="$PROJECT_DIR$/shell.py" />
         <option value="$PROJECT_DIR$/joy_example.py" />
         <option value="$PROJECT_DIR$/joy_example_stripped.py" />
+        <option value="$PROJECT_DIR$/joy_position.py" />
         <option value="$PROJECT_DIR$/joystick.py" />
+        <option value="$PROJECT_DIR$/joy_control.py" />
+        <option value="$PROJECT_DIR$/shell.py" />
       </list>
     </option>
   </component>
@@ -177,7 +161,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.joystick">
+  <component name="RunManager" selected="Python.shell">
     <configuration name="joy_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Shell" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -258,10 +242,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.shell" />
         <item itemvalue="Python.joystick" />
         <item itemvalue="Python.joy_example_stripped" />
         <item itemvalue="Python.joy_example" />
-        <item itemvalue="Python.shell" />
       </list>
     </recent_temporary>
   </component>
@@ -364,26 +348,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/joy_control.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="22" lean-forward="true" selection-start-line="1" selection-start-column="22" selection-end-line="1" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shell.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="107" column="45" lean-forward="true" selection-start-line="107" selection-start-column="45" selection-end-line="107" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/shelltypes.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -393,15 +357,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/phoneparse.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-207">
+        <state relative-caret-position="34">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/joy_example.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="104" column="45" lean-forward="true" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -412,12 +369,49 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/joy_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="104" column="45" lean-forward="true" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/joy_position.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="e#80#104#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/joystick.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+        <state relative-caret-position="483">
+          <caret line="53" selection-start-line="53" selection-end-line="53" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/joy_control.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="55" column="27" selection-start-line="55" selection-start-column="27" selection-end-line="55" selection-end-column="27" />
+          <folding>
+            <element signature="e#58#82#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shell.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="106" column="4" selection-start-line="106" selection-start-column="4" selection-end-line="106" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
