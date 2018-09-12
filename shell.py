@@ -1,7 +1,8 @@
 import threading
-# TODO: Change to "queue" in python 3
 import queue
 from time import sleep, time
+
+from joy_control import *
 
 
 # Note: we can create objects and pass their methods into this object
@@ -103,6 +104,11 @@ def main():
 	functions.append(obj.poll_function)
 	obj = Demo_obj(1.414)
 	functions.append(obj.poll_function)
+
+	functions = []
+	joyObj = Joy_control(1)
+	functions.append(joyObj.poll_function)
+
 	shell = Shell(4, functions)
 	shell.run() # Start both loops
 	# sleep(6)
