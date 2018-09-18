@@ -1,10 +1,9 @@
 #Object accounting for button presses
 #Polled constantly
 
-from shell import Pq_obj
-from time import time, sleep
+from shell_types import Pq_obj
+from time import time
 import pygame
-import serial
 
 class Joy_control:
 	def __init__(self, val):
@@ -35,18 +34,13 @@ class Joy_control:
 		self.numhats = self.joystick.get_numhats()
 		print("{} hats".format(self.numhats))
 
-		self.ser = serial.Serial('COM5', 9600)
-		sleep(2)
-
 	def poll_function(self):
 		# Prevents multiple of these objects in the queue
 		if self.inQueue:
 			return None
 
-		# ADD CODE HERE
-
 		self.inQueue = True
-		return Pq_obj(3, self.event_function, args=[])
+		return Pq_obj(3, self.event_function)
 
 	# Prints out thread
 	def event_function(self):
@@ -70,37 +64,12 @@ class Joy_control:
 				print("Button {} released.".format(i))
 
 		# If you remove this line the code breaks. Don't ask me why
-		for event in pygame.event.get(): ''''''
+		for event in pygame.event.get():
 
 		# We have finished the item out of the queue. Allow it to enter again
-		# This needs to remain the last line
+		# * This needs to remain the last line *
 		self.inQueue = False
 
-	# Writes to arduino
-	def write_to_arduino(self):
-		if time() - self.arduinoWriteTime < .1:
-			return
-
-		self.arduinoWriteTime = time()
-
-		# Mapped from 0 to 200, with positive being forward, 0 being backward
-		# Bad simple for byte encoding. Fix this to be centered on 0
-		lowerSpeed = int(0 - self.joystick.get_axis(1) * 100)
-
-		# Create a small dead zone
-		if lowerSpeed < 110 and lowerSpeed > 90:
-			lowerSpeed = 100
-
-		print(lowerSpeed, end=' ')
-
-		# This will be 0, 100, or 200. We don't have an axis for this one.
-		upperSpeed = self.joystick.get_hat(0)[1] * 100
-
-		print(' ' + str(upperSpeed))
-
-		print(lowerSpeed, end=' ')
-		print(upperSpeed)
-
-		self.ser.write(bytes(str(lowerSpeed) + ' ', encoding="ascii"))
-		self.ser.write(bytes(str(upperSpeed) + " ", encoding="ascii"))
-		self.ser.write(bytes(str(314) + "\n", encoding="ascii"))
+	# Prints out the joystick data
+	def print_joy_data(self, joyData):
+		pass
