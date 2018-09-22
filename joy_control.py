@@ -1,15 +1,24 @@
 #Object accounting for button presses
 #Polled constantly
 
-from shell import Pq_obj
-from time import time, sleep
+from shell_types import Pq_obj
+from time import time
 import pygame
-import serial
 
+# An object that parses joystick data, and supplies it to all functions in functsToCall
+# Can print out this data if this object's print_joy_data is included
+# Functions called should take three parameters:
+# - axesData: contains four numbers in range (-1, 1): Front/back, left/right, yaw left/right, throttle up/down
+# - hatData: a list of (int, int) tuples,
+# - buttonData: a list of three lists:
+#   - each button (number) that was pressed since the last update
+#   - each button (number) that was released since the last update
+#   - a list of all buttons, with '1' for pressed and '0' for released
 class Joy_control:
-	def __init__(self, val):
+	def __init__(self):
+		self.functsToCall = []
 		self.inQueue = False
-		self.val = val
+		self.initialized = False
 		self.time = time()
 
 		self.arduinoWriteTime = time()
@@ -17,90 +26,87 @@ class Joy_control:
 		pygame.init()
 
 		# Initialize the joystick
-		self.joystick = pygame.joystick.Joystick(0)
-		self.joystick.init()
+		# Don't crash the whole program if we can't find a joystick
+		try:
+			self.joystick = pygame.joystick.Joystick(0)
+			self.joystick.init()
+			self.initialized = True
+		except pygame.error:
+			print("Cannot find joystick. Not running joystick.")
+			return
 
 		self.name = self.joystick.get_name()
 		print(self.name)
 
 		self.numaxes = self.joystick.get_numaxes()
-		print("{} axes".format(self.numaxes))
 
 		self.buttons = []
 		self.numbuttons = self.joystick.get_numbuttons()
-		print("{} buttons".format(self.numbuttons))
 		for i in range(self.numbuttons):
 			self.buttons.append(self.joystick.get_button(i))
 
 		self.numhats = self.joystick.get_numhats()
-		print("{} hats".format(self.numhats))
 
-		self.ser = serial.Serial('COM5', 9600)
-		sleep(2)
-
+	# A very quick function for ensuring the joystick data is constantly updated without backlogging
 	def poll_function(self):
 		# Prevents multiple of these objects in the queue
-		if self.inQueue:
+		if self.inQueue or not self.initialized:
 			return None
 
-		# ADD CODE HERE
-
 		self.inQueue = True
-		return Pq_obj(3, self.event_function, args=[])
+		return Pq_obj(3, self.event_function)
 
-	# Prints out thread
+	def add_function_to_call(self, function):
+		self.functsToCall.append(function)
+
+	# Reads the joystick data and runs all functions that are linked to this object
 	def event_function(self):
-		# Write commands to arduino
-		self.write_to_arduino()
+		# Get a list of numbers from the current axis positions
+		# Sign flip on all axis
+		axes = [0 - self.joystick.get_axis(1), 0 - self.joystick.get_axis(0), 0 - self.joystick.get_axis(3),
+				0 - self.joystick.get_axis(2)]
 
-		# The joystick and hat positions are only printed periodically
-		if time() - self.time > self.val:
-			self.time = time()
-			print("JOYSTICK POSITION:\nFront/back: {:>6.3f}\nLeft/right: {:>6.3f}\nYaw: {:>6.3f}\nThrottle: {:>6.3f}".format(
-		self.joystick.get_axis(1), self.joystick.get_axis(0), self.joystick.get_axis(3), self.joystick.get_axis(2)))
-			for i in range(self.numhats):
-				print("HAT {} POSITION: {}".format(i, str(self.joystick.get_hat(i))))
+		# Read the data from all hat switches
+		hatData = []
+		for i in range(self.numhats):
+			hatData.append(self.joystick.get_hat(i))
 
+		# List off the buttons statuses. List both new presses, new releases, and a list of all button statuses
+		buttonsPressed = []
+		buttonsReleased = []
+		buttonStatus = []
 		for i in range(self.numbuttons):
-			if self.buttons[i] == 0 and self.joystick.get_button(i) == 1:
-				self.buttons[i] = 1
-				print("Button {} pressed.".format(i))
-			elif self.buttons[i] == 1 and self.joystick.get_button(i) == 0:
-				self.buttons[i] = 0
-				print("Button {} released.".format(i))
+			if self.joystick.get_button(i) == 1:
+				buttonStatus.append(1)
+				if self.buttons[i] == 0:
+					self.buttons[i] = 1
+					buttonsPressed.append(i)
+			else:
+				buttonStatus.append(0)
+				if self.buttons[i] == 1:
+					self.buttons[i] = 0
+					buttonsReleased.append(i)
 
 		# If you remove this line the code breaks. Don't ask me why
 		for event in pygame.event.get(): ''''''
 
-		# We have finished the item out of the queue. Allow it to enter again
-		# This needs to remain the last line
+		for f in self.functsToCall:
+			f(axes, hatData, [buttonsPressed, buttonsReleased, buttonStatus])
+
 		self.inQueue = False
 
-	# Writes to arduino
-	def write_to_arduino(self):
-		if time() - self.arduinoWriteTime < .1:
-			return
-
-		self.arduinoWriteTime = time()
-
-		# Mapped from 0 to 200, with positive being forward, 0 being backward
-		# Bad simple for byte encoding. Fix this to be centered on 0
-		lowerSpeed = int(0 - self.joystick.get_axis(1) * 100) + 100
-
-		# Create a small dead zone
-		if lowerSpeed < 110 and lowerSpeed > 90:
-			lowerSpeed = 100
-
-		print(lowerSpeed, end=' ')
-
-		# This will be 0, 100, or 200. We don't have an axis for this one.
-		upperSpeed = self.joystick.get_hat(0)[1] * 100 + 100
-
-		print(' ' + str(upperSpeed))
-
-		print(lowerSpeed, end=' ')
-		print(upperSpeed)
-
-		self.ser.write(bytes(str(lowerSpeed) + ' ', encoding="ascii"))
-		self.ser.write(bytes(str(upperSpeed) + " ", encoding="ascii"))
-		self.ser.write(bytes(str(314) + "\n", encoding="ascii"))
+	# Prints out the joystick data
+	def print_joy_data(self, axesData, hatData, buttonData):
+		# Only print axis and hat positions each half second
+		if time() - self.time > 0.5:
+			self.time = time()
+			print('Front/back: ' + str(axesData[0]) + '; Left/right: ' + str(axesData[1]), end='')
+			print('; Yaw left/right: ' + str(axesData[2]) + '; Throttle up/down: ' + str(axesData[3]))
+			print('Hat position x, y: ' + str(hatData[0][0]) + ', ' + str(hatData[0][1]))
+		# Print out whenever buttons are pressed or released
+		# Note that if we only printed this out every half second like the axes above, we'd need
+		# to check each button's status instead of counting on the press/release lists
+		for i in buttonData[0]:
+			print("Button " + str(i) + " pressed.")
+		for i in buttonData[1]:
+			print("Button " + str(i) + " released.")

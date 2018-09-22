@@ -1,8 +1,11 @@
 import threading
 import queue
 from time import sleep, time
+from shell_types import *
 
+# place all object imports here:
 from joy_control import *
+from joy_to_serial import *
 
 
 # Note: we can create objects and pass their methods into this object
@@ -16,9 +19,10 @@ class Shell:
 
 		self.pfl = pollFunctionsList
 		# Requires at least 3 threads to run
-		# Note that it is more efficient with more threads (less time burned in main threads)
-		if threadCount < 3:
-			threadCount = 3
+		# Note: number is 4 due to some interaction with the main thread counting as an extra one (?)
+		# Note: program might be more efficient with more threads (less time burned in main threads)
+		if threadCount < 4:
+			threadCount = 4
 		self.maxThreads = threadCount
 
 	def run(self):
@@ -55,22 +59,15 @@ class Shell:
 		while not self.stop:
 			if threading.active_count() < self.maxThreads and self.pq.qsize() > 0:
 				obj = self.pq.get()
-				t = threading.Thread(target=obj.func, args=obj.args)
-				t.start()
+				# print(str(threading.active_count()) + "/" + str(self.maxThreads) + " threads running")
+				if obj.args is None:
+					t = threading.Thread(target=obj.func)
+					t.start()
+				else:
+					t = threading.Thread(target=obj.func, args=obj.args)
+					t.start()
 			else:
 				sleep(0.01)
-
-
-# Comparable object for storing a function and its arguments in the priority queue
-# Sorts first by given priority number, then by timestamp
-class Pq_obj:
-	def __init__(self, priority, func, args=[]):
-		self.func = func
-		self.args = args
-		self.priority = (priority, time())
-
-	def __lt__(self, other):
-		return self.priority < other.priority
 
 
 # Simple object for testing Shell. Uses a polled timer to add a task to the queue, which then prints
@@ -88,14 +85,8 @@ class Demo_obj:
 
 	# Prints out thread
 	def event_function(self):
-		self.do_some_math()
 		print("Event function " + str(self.val) + " is running on a thread")
-
-	# Does nothing
-	def do_some_math(self):
-		x = self.val
-		y = self.val
-		x = x * y
+		sleep(6)
 
 
 def main():
@@ -109,7 +100,7 @@ def main():
 	joyObj = Joy_control(1)
 	functions.append(joyObj.poll_function)
 
-	shell = Shell(4, functions)
+	shell = Shell(8, functions)
 	shell.run() # Start both loops
 	# sleep(6)
 	# shell.stop = True
