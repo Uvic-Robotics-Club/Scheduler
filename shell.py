@@ -60,14 +60,25 @@ class Shell:
 			if threading.active_count() < self.maxThreads and self.pq.qsize() > 0:
 				obj = self.pq.get()
 				# print(str(threading.active_count()) + "/" + str(self.maxThreads) + " threads running")
-				if obj.args is None:
-					t = threading.Thread(target=obj.func)
-					t.start()
-				else:
-					t = threading.Thread(target=obj.func, args=obj.args)
-					t.start()
+				t = threading.Thread(target=self.funct_runner, args=[obj.func, obj.args])
+				t.start()
+				# else:
+				# 	t = threading.Thread(target=obj.func, args=obj.args)
+				# 	t.start()
 			else:
 				sleep(0.01)
+
+	# Takes a single task from the queue, runs it, and places the return in the queue
+	# inputs: target: a function, taking 0 or one arguments
+	# args: a single argument (can be anything) or None. Not passed to function if given None
+	def funct_runner(self, target, args):
+		res = None
+		if args:
+			res = target(args)
+		else:
+			res = target()
+		if res:
+			self.pq.put(res)
 
 
 # Simple object for testing Shell. Uses a polled timer to add a task to the queue, which then prints
@@ -83,10 +94,16 @@ class Demo_obj:
 			#3 is the priority of this event
 			return Pq_obj(3, self.event_function)
 
-	# Prints out thread
+	# Checks that functions can be returned by polled functions
 	def event_function(self):
 		print("Event function " + str(self.val) + " is running on a thread")
-		sleep(6)
+		# Note: testing purposes only. NEVER put a sleep call in a real module!
+		# sleep(10)
+		return Pq_obj(3, self.do_later_function, self.val + 1)
+
+	# checks that functions can be returned by functions in queue
+	def do_later_function(self, num):
+		print("This ran a bit later from event function " + str(num - 1))
 
 
 def main():
