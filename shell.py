@@ -3,34 +3,33 @@ import queue
 from time import sleep, time
 from shell_types import *
 
-# place all object imports here:
-from joy_control import *
-from joy_to_serial import *
-
-
-# Note: we can create objects and pass their methods into this object
-
 
 class Shell:
+	# threadCount: the maximum number of threads at one time.
+	# pollFunctionsList: the list of functions to run through continuously
 	def __init__(self, threadCount, pollFunctionsList):
 		self.pq = queue.PriorityQueue()
-		self.stop = False
+		self.stop = True
 		self.minPollTime = 0.01
 
 		self.pfl = pollFunctionsList
 		# Requires at least 3 threads to run
-		# Note: number is 4 due to some interaction with the main thread counting as an extra one (?)
+		# Note: number is 4 due to it returning control (which is a thread) to whatever called shell.start
 		# Note: program might be more efficient with more threads (less time burned in main threads)
 		if threadCount < 4:
 			threadCount = 4
 		self.maxThreads = threadCount
 
+	# Start both necessary threads, then return control. Runs until a shell.stop() call
 	def run(self):
 		self.stop = False
 		t = threading.Thread(target=self.poll_loop)
 		t.start()
 		t = threading.Thread(target=self.event_loop)
 		t.start()
+
+	def stop(self):
+		self.stop = True
 
 	# Loops through every polling function
 	def poll_loop(self):
@@ -106,6 +105,8 @@ class Demo_obj:
 		print("This ran a bit later from event function " + str(num - 1))
 
 
+# A demo for how to use.
+# Note: should actually be set up and called through a separate 'start.py' file
 def main():
 	functions = []
 	obj = Demo_obj(1.11)
@@ -113,14 +114,10 @@ def main():
 	obj = Demo_obj(1.414)
 	functions.append(obj.poll_function)
 
-	functions = []
-	joyObj = Joy_control(1)
-	functions.append(joyObj.poll_function)
-
 	shell = Shell(8, functions)
-	shell.run() # Start both loops
+	shell.run()			# Start both loops
 	# sleep(6)
-	# shell.stop = True
+	# shell.stop()
 
 
 if __name__ == "__main__":

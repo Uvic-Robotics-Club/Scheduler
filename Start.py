@@ -19,7 +19,7 @@ def main():
 	ser = Arduino_arm_control()
 	joy.add_function_to_call(ser.write_to_arduino)
 
-	# Objects to demo multithreading. Don't actually do anything
+	# Objects to demo multithreading. Don't actually do anything but print stuff
 	# obj = shell.Demo_obj(2)
 	# functs.append(obj.poll_function)
 	# obj = shell.Demo_obj(1.2)
