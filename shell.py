@@ -50,7 +50,8 @@ class Shell:
 			for f in self.pfl:
 				res = f()
 				if res:
-					self.pq.put(res)
+					for funct in res:
+						self.pq.put(funct)
 
 	# TODO: add some way to kill a thread that takes too long
 	# Handles tasks from priority queue
@@ -61,9 +62,6 @@ class Shell:
 				# print(str(threading.active_count()) + "/" + str(self.maxThreads) + " threads running")
 				t = threading.Thread(target=self.funct_runner, args=[obj.func, obj.args])
 				t.start()
-				# else:
-				# 	t = threading.Thread(target=obj.func, args=obj.args)
-				# 	t.start()
 			else:
 				sleep(0.01)
 
@@ -77,7 +75,12 @@ class Shell:
 		else:
 			res = target()
 		if res:
-			self.pq.put(res)
+			for funct in res:
+				self.pq.put(funct)
+
+
+# -------------------------------------------------------------------------------------------
+# Below this line is NOT part of Shell's implementation
 
 
 # Simple object for testing Shell. Uses a polled timer to add a task to the queue, which then prints
@@ -91,14 +94,14 @@ class Demo_obj:
 		if time() - self.time > self.val:
 			self.time = time()
 			#3 is the priority of this event
-			return Pq_obj(3, self.event_function)
+			return [Pq_obj(3, self.event_function)]
 
 	# Checks that functions can be returned by polled functions
 	def event_function(self):
 		print("Event function " + str(self.val) + " is running on a thread")
 		# Note: testing purposes only. NEVER put a sleep call in a real module!
 		# sleep(10)
-		return Pq_obj(3, self.do_later_function, self.val + 1)
+		return [Pq_obj(3, self.do_later_function, self.val + 1)]
 
 	# checks that functions can be returned by functions in queue
 	def do_later_function(self, num):

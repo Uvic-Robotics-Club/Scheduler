@@ -54,7 +54,7 @@ class Joy_control:
 			return None
 
 		self.inQueue = True
-		return Pq_obj(3, self.event_function)
+		return [Pq_obj(3, self.event_function)]
 
 	def add_function_to_call(self, function):
 		self.functsToCall.append(function)

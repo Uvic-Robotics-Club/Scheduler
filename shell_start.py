@@ -19,11 +19,13 @@ def main():
 	ser = Arduino_arm_control()
 	joy.add_function_to_call(ser.write_to_arduino)
 
+	functs = []
+
 	# Objects to demo multithreading. Don't actually do anything but print stuff
-	# obj = shell.Demo_obj(2)
-	# functs.append(obj.poll_function)
-	# obj = shell.Demo_obj(1.2)
-	# functs.append(obj.poll_function)
+	obj = shell.Demo_obj(2)
+	functs.append(obj.poll_function)
+	obj = shell.Demo_obj(1.2)
+	functs.append(obj.poll_function)
 
 	# Initialize and start the program
 	# '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
