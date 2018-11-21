@@ -7,7 +7,8 @@ class Arduino_arm_control:
 		self.time = time()
 
 		# Try to open a
-		self.portsToTry = ['COM3', 'COM5', 'COM4']
+		self.portsToTry = ['COM3', 'COM5', 'COM4', '/dev/ttyUSB0', '/dev/ttyUSB1',
+							'/dev/ttyAMA0', '/dev/ttyAMA1', '/dev/ttyACM0', '/dev/ttyACM1']
 
 		self.ser = None
 		for port in self.portsToTry:
