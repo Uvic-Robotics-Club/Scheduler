@@ -4,6 +4,7 @@ import serial
 
 class Arduino_arm_control:
 	def __init__(self):
+		self.open = 1;
 		self.time = time()
 
 		# Try to open a
@@ -25,7 +26,7 @@ class Arduino_arm_control:
 			return
 
 		# Ensure we don't overwhelm the serial (or stall main program)
-		if time() - self.time < 0.05:
+		if time() - self.time < 0.08:
 			return
 
 		self.time = time()
@@ -39,11 +40,17 @@ class Arduino_arm_control:
 			lowerSpeed = 0
 
 		# This will be -50, 0, or 50. We don't have an axis for this one.
-		upperSpeed = hatData[0][1] * 50
+		upperSpeed = hatData[0][1] * 75
 
-		# print(lowerSpeed, end=' ')
-		# print(upperSpeed)
+		swivelSpeed = int(axesData[2] * 100)
+
+		if buttonData[2][0] == 1:
+			self.open = 0
+		elif buttonData[2][1] == 1:
+			self.open = 1
 
 		self.ser.write(bytes(str(lowerSpeed) + ' ', encoding="ascii"))
 		self.ser.write(bytes(str(upperSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(swivelSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(self.open) + " ", encoding="ascii"))
 		self.ser.write(bytes(str(314) + "\n", encoding="ascii"))
