@@ -1,10 +1,5 @@
-# Turn it to a singleton class
-#
-
-
 import socket
 from time import sleep
-
 
 def main():
     # Setting up the server
@@ -24,7 +19,7 @@ def main():
     while (True):
         try:
             data = client.recv(1024)
-            print("Client said:", data)
+            print("[Client]:", data)
 
             if (data == bytes("Hello server", encoding= 'utf-8')):
                 sleep(1)
