@@ -39,24 +39,7 @@ class Station_Communication_Gate():
 
     def send(self, msg):  # it is used to send data to client
 
-        self.sending_queue.put(msg)  # adds the msg to the sending_queue
-
-    """
-    def receive(self):
-        try:
-            client_message = self.classConnectionList[3].recv(1024)  # using socket module to receive data from server
-
-        except socket.error: # this error is raised if client disconnects
-            print("Client disconnected")
-            print("Waiting for client to reconnect...")
-            client, clientAddress = self.classConnectionList[0].accept()  # getting connection from (new) client again
-            print("Client successfully reconnected")
-            self.classConnectionList[3] = client  # storing the new client in index 3 of classConnectionList
-            self.classConnectionList[4] = clientAddress  # storing the address of the new client in index 4 of
-            # ... classConnectionList
-        else:  # runs only if no exception has been raised
-            return client_message  # returning the received message
-    """
+        self.sending_queue.put(msg + "\n")  # adds the msg to the sending_queue
 
     def main_thread(self):  # this is the main thread of the server which is pointed to in the initializer
 
@@ -66,7 +49,11 @@ class Station_Communication_Gate():
 
         while True:  # all thread functions must have a while loop inside them
             try:  # trying to receive a message from client
-                msg = self.classConnectionList[3].recv(1024)
+                msg = self.classConnectionList[3].recv(1024).decode("utf-8")  # since tye string was encoded to bytes
+                # ... for sending by the client, it has to be decoded now
+                msg = msg.split("\n")
+                for item in msg:
+                    item.strip("\n")
 
             except socket.timeout:  # catching the timout error
                 print("time out error while waiting to receive from client")
@@ -86,7 +73,8 @@ class Station_Communication_Gate():
                     self.classConnectionList[3].settimeout(0.5)  # timeout has to be reset since it is a new object
                     # ... classConnectionList
             else:  # runs only if no exception has been raised
-                print(msg)
+                for item in msg:
+                    print(item)
 
             for counter in range(10):  # the for loop is intended to send 10 messages to the rover
                 if self.sending_queue.empty():  # checking if the sending_queue is not empty
@@ -113,10 +101,6 @@ class Station_Communication_Gate():
                         # ... classConnectionList
                     else:
                         pass
-                """
-                else:
-                    print("Nothing to send to client")
-                """
 
 
 def main():

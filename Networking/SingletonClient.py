@@ -64,38 +64,13 @@ class Rover_Communication_Gate:
 
         return client  # returning client, which is a socket object
 
-
     def cleanConnectionList(self):  # this method is used to empty the list when the server stops listening
 
         for counter in range(3):
             del self.class_connection_list[0]
 
     def send(self, msg):  # it is used to send data to server
-        self.sending_queue.put(msg)  # adding the message to the class sending  queue
-
-    def receive(self):  # it is used to receive messages from server. It returns the data receive
-        try:
-            server_message = self.class_connection_list[0].recv(1024)  # using socket module to receive data from server
-
-
-        except socket.error:
-            """
-            Notice the connection of the initial client object has failed. If we try to create a new object, it will 
-            point to the previous object as it is supposed to. However, the previous object is broken and is not 
-            working. Hence, we need to completely empty the 'class_connection_list' se when we try to create a new 
-            object, the program actually creates a new object.
-            """
-            sleep(1)
-            if self.class_connection_list != []:
-                ip = self.class_connection_list[1]  # storing ip
-                port = self.class_connection_list[2]  # storing port
-                self.cleanConnectionList()
-            self.class_connection_list.append(self.connectToServer(ip, port))  # creating a new client socket object
-            # ...and storing it in the first index of class_connection_list
-            self.class_connection_list.append(ip)  # appending ip to class_connection_list
-            self.class_connection_list.append(port)  # appending port to class_connection_list
-        else:  # runs only if no exception has been raised
-            return b"[Station]: " + server_message
+        self.sending_queue.put(msg + "\n")  # adding the message to the class sending  queue
 
     def main_thread(self):  # this is the main thread of the client which is pointed to in the initializer
         self.class_connection_list[0].settimeout(0.5)  # setting a time out for the thread so it doesn't spend time on
@@ -103,12 +78,22 @@ class Rover_Communication_Gate:
         # ... receive sth from client and starts sending stuff, if there are any
         while True:
             try:
-                msg = self.class_connection_list[0].recv(1024)
+                msg = (self.class_connection_list[0].recv(1024)).decode("utf-8")  # since tye string was encoded to
+                # ... bytes for sending by the server, it has to be decoded now
+                msg = msg.split("\n")
+                for item in msg:
+                    item.strip("\n")
 
             except socket.timeout:  # catching the timeout error
                 print("timeout error while waiting to receive from server")
 
             except socket.error as error:
+                """
+                Notice the connection of the initial client object has failed. If we try to create a new object, it will 
+                point to the previous object as it is supposed to. However, the previous object is broken and is not 
+                working. Hence, we need to completely empty the 'class_connection_list' se when we try to create a new 
+                object, the program actually creates a new object.
+                """
                 if error == errno.ECONNRESET:  # checking if the raised error is "ECONNRESET" type
                     # "ECONNRESET" is the exception that is raised when the other end is disconnected. In this case,
                     # ... this error is raised if client disconnects
@@ -126,7 +111,8 @@ class Rover_Communication_Gate:
                     self.class_connection_list[0].settimeout(0.5)  # timeout has to be reset since it is a new
                     # ... object classConnectionList
             else:
-                print(msg)
+                for item in msg:
+                    print(item)
 
             for counter in range(10):  # this for loop is intended to send 10 messages to the station
                 if self.sending_queue.empty():
@@ -154,14 +140,6 @@ class Rover_Communication_Gate:
                         # ... object classConnectionList
 
 
-
-
-
-
-
-
-
-
 def main():
     port = 9999  # setting port to 9999
     # Setting up client
@@ -174,10 +152,6 @@ def main():
 
     for i in range(10000):
         gate.send(str(i))
-
-
-
-
 
 
 if __name__ == '__main__':

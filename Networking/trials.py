@@ -1,7 +1,7 @@
 
 def main():
-    for i in range(5):
-        print("HI")
+    i = [1,2,4,5]
+    print(i)
 
 if __name__ == '__main__':
     main()
