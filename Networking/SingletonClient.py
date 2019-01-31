@@ -143,7 +143,8 @@ class Rover_Communication_Gate:
 def main():
     port = 9999  # setting port to 9999
     # Setting up client
-    ipOfServer = socket.gethostbyname("")  # getting ip address of the server (this computer for now!)
+    ipOfServer = socket.\
+    gethostbyname("")  # getting ip address of the server (this computer for now!)
 
     gate = Rover_Communication_Gate(ipOfServer, port)
 
