@@ -4,7 +4,7 @@ import queue
 from threading import Thread
 import errno  # this is used for handling specific errors for the socket module
 
-# adding \n
+# try all the hosts and then connect
 
 class Station_Communication_Gate():
     classConnectionList = []
@@ -38,11 +38,9 @@ class Station_Communication_Gate():
             pass
 
     def send(self, msg):  # it is used to send data to client
-
         self.sending_queue.put(msg + "\n")  # adds the msg to the sending_queue
 
     def main_thread(self):  # this is the main thread of the server which is pointed to in the initializer
-
         self.classConnectionList[3].settimeout(0.5)  # setting a time out for the thread so it doesn't spend time on the
         # ... task for more than two seconds; so if it doesn't receive anything for 0.5 seconds, it stops trying to
         # ... receive sth from client and starts sending stuff, if there are any

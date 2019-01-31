@@ -4,7 +4,7 @@ import queue
 from threading import Thread
 import errno
 
-# adding \n
+# try all the hosts and then connect
 
 class Rover_Communication_Gate:
     class_connection_list = []  # class_connection_list --> [client socket Object, ip, port]
@@ -145,7 +145,7 @@ def main():
     # Setting up client
     ipOfServer = socket.gethostbyname("")  # getting ip address of the server (this computer for now!)
 
-    gate = Rover_Communication_Gate(ipOfServer, port)
+    gate = Rover_Communication_Gate('<broadcast>', port)
 
     gate2 = Rover_Communication_Gate("HEEEEYY", 2000000)
     gate3 = Rover_Communication_Gate("YOOOOOO", 900001)
