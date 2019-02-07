@@ -103,7 +103,7 @@ class Station_Communication_Gate():
 
 def main():
     ip = socket.gethostbyname("")  # Getting ip address of the computer
-    port = 9999  # setting port to 9999
+    port = 45454  # setting port to 9999
     gate = Station_Communication_Gate(ip, port)
     gateS2 = Station_Communication_Gate("QQQQQQQQ", 27477774774)
     for i in range(10000):
