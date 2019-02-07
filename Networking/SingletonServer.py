@@ -5,6 +5,7 @@ from threading import Thread
 import errno  # this is used for handling specific errors for the socket module
 
 # try all the hosts and then connect
+# todo: craete udp to broadcast with it
 
 class Station_Communication_Gate():
     classConnectionList = []

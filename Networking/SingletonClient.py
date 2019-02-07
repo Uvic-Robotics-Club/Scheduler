@@ -5,6 +5,7 @@ from threading import Thread
 import errno
 
 # try all the hosts and then connect
+# todo: create udp to listen to the server
 
 class Rover_Communication_Gate:
     class_connection_list = []  # class_connection_list --> [client socket Object, ip, port]
@@ -49,8 +50,8 @@ class Rover_Communication_Gate:
         connectedToServer = False  # Defining a boolean to show whether client is connected to server
         while (connectedToServer == False):  # trying to connecting the client to the server while it is not connected
             try:  # program tries to connect to server
-                client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # creating client object  # todo: this should be looked up since we have no idea what it does
-                client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)  # todo: this should be looked up since we have no idea what it does
+                client = socket.socket()  # creating client object
+                #client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                 address = (ip, port)  # creating address tuple
                 client.connect(address)  # connecting to the server using address
                 connectedToServer = True  # assuming that the client has successfully connected to the server and
@@ -147,7 +148,7 @@ def main():
     # Setting up client
     ipOfServer = socket.gethostbyname("")  # getting ip address of the server (this computer for now!)
 
-    gate = Rover_Communication_Gate('<broadcast>', port)  # todo: this should be looked up since we have no idea what it does
+    gate = Rover_Communication_Gate(ipOfServer, port)
 
     gate2 = Rover_Communication_Gate("HEEEEYY", 2000000)
     gate3 = Rover_Communication_Gate("YOOOOOO", 900001)
