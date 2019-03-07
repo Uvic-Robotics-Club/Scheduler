@@ -4,8 +4,14 @@ import queue
 from threading import Thread
 import errno  # this is used for handling specific errors for the socket module
 
+"""
+Note:
+Anything that has the potential to block should be in the thread not in main
+"""
+
+# todo: turn duplicate codes into methods
 # try all the hosts and then connect
-# todo: craete udp to broadcast with it
+
 
 class Station_Communication_Gate():
     classConnectionList = []
@@ -25,12 +31,7 @@ class Station_Communication_Gate():
             self.classConnectionList[0].listen(1)  # server starts listening
             print("Server started listening:", ip, ":", port)
 
-            client, clientAddress = self.classConnectionList[0].accept()
-            self.classConnectionList.append(client)  # storing the client that has connected to the server in
-            # ... index 3 of classConnectionList
-            self.classConnectionList.append(clientAddress)  # storing the address of the client that has connected to
-            # ... the server in index 5 of classConnectionList
-            print("Got a connection from", clientAddress[0], ":", clientAddress[1])
+
 
             t = Thread(target= self.main_thread)  # setting the main thread
             t.start()  # starting the main thread
@@ -42,6 +43,14 @@ class Station_Communication_Gate():
         self.sending_queue.put(msg + "\n")  # adds the msg to the sending_queue
 
     def main_thread(self):  # this is the main thread of the server which is pointed to in the initializer
+        client, clientAddress = self.classConnectionList[0].accept()
+        self.classConnectionList.append(client)  # storing the client that has connected to the server in
+        # ... index 3 of classConnectionList
+        self.classConnectionList.append(clientAddress)  # storing the address of the client that has connected to
+        # ... the server in index 5 of classConnectionList
+        print("Got a connection from", clientAddress[0], ":", clientAddress[1])
+
+
         self.classConnectionList[3].settimeout(0.5)  # setting a time out for the thread so it doesn't spend time on the
         # ... task for more than two seconds; so if it doesn't receive anything for 0.5 seconds, it stops trying to
         # ... receive sth from client and starts sending stuff, if there are any
@@ -83,7 +92,7 @@ class Station_Communication_Gate():
                         currentMsgToSend = self.sending_queue.get()  # storing the msg that is about to be sent so if
                         # ... the server fails to send it, it gets added to the queue and is not lost
                         self.classConnectionList[3].send(bytes(currentMsgToSend, encoding='utf-8'))
-                        print("DATA WAS SENT TO CLIENT")
+                        #print("DATA WAS SENT TO CLIENT")
 
                     except socket.error:  # this is a general socket error which also covers "connection reset by peer"
                         self.sending_queue.put(currentMsgToSend)
@@ -109,6 +118,7 @@ def main():
     gateS2 = Station_Communication_Gate("QQQQQQQQ", 27477774774)
     for i in range(10000):
         gate.send(str(i))
+        sleep(1)
 
 
 if __name__ == '__main__':

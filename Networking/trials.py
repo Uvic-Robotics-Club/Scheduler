@@ -1,6 +1,6 @@
 import socket
 def main():
-    pass
+    print (socket.gethostbyname(socket.gethostname()))
 
 
 

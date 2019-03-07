@@ -4,8 +4,7 @@ import queue
 from threading import Thread
 import errno
 
-# try all the hosts and then connect
-# todo: create udp to listen to the server
+# todo: merge the udp with this
 
 class Rover_Communication_Gate:
     class_connection_list = []  # class_connection_list --> [client socket Object, ip, port]
@@ -68,7 +67,6 @@ class Rover_Communication_Gate:
         return client  # returning client, which is a socket object
 
     def cleanConnectionList(self):  # this method is used to empty the list when the server stops listening
-
         for counter in range(3):
             del self.class_connection_list[0]
 
@@ -125,7 +123,7 @@ class Rover_Communication_Gate:
                         currentMsgToSend = self.sending_queue.get()   # storing the msg that is about to be sent so if
                         # ... the client fails to send it, it gets added to the queue and is not lost
                         self.class_connection_list[0].send(bytes(currentMsgToSend, encoding='utf-8'))
-                        print("DATA WAS SENT TO SERVER")
+                        #print("DATA WAS SENT TO SERVER")
                     except socket.error:
                         self.sending_queue.put(currentMsgToSend)
                         print("Server disconnected while trying to send data to server")
@@ -155,6 +153,7 @@ def main():
 
     for i in range(10000):
         gate.send(str(i))
+        sleep(1)
 
 
 if __name__ == '__main__':
