@@ -13,7 +13,7 @@ server_socket.bind(address)
 
 roverConnected = False
 while roverConnected ==False:
-    print ("Listening")
+    print ("UDP Listening")
     recv_data, addr = server_socket.recvfrom(2048)  # addr would be address of client
     msg = recv_data.decode('utf-8')
     print (msg)

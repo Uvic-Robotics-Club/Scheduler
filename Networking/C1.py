@@ -10,7 +10,6 @@ client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 connectedToServer = False
 while connectedToServer == False:
     try:
-
         client_socket.sendto(bytes("A", encoding='utf-8'), address)
         client_socket.settimeout(1)
 
@@ -18,14 +17,14 @@ while connectedToServer == False:
 
         #print(addr, recv_data)
         msg = recv_data.decode('utf-8')
-        print (msg)
+        print(msg)
 
         if msg == "B":
             connectedToServer = True
 
 
     except socket.timeout:
-        print ("Server not listening")
+        print(" UDP Server not listening")
 
 
 

@@ -4,10 +4,12 @@ import queue
 from threading import Thread
 import errno
 
-# todo: merge the udp with this
+# todo: take care of the ports
+# todo: be aware that one message is lost if a side disconnects (it actually gets added to the queue
+#  but this has not been tested yer)
 
 class Rover_Communication_Gate:
-    class_connection_list = []  # class_connection_list --> [client socket Object, ip, port]
+    class_connection_list = [None, None, None]  # class_connection_list --> [client socket Object, ip of server, port]
     sending_queue = queue.Queue()  # a queue that contains all the data that needs to be sent to the station
     # ... since this is a complex object, it is shared among all instances of the class
 
@@ -23,60 +25,99 @@ class Rover_Communication_Gate:
     As a result, if we use a complex object like a list as a class variable, its going to be declared only once and 
     would result in a singleton behaviour for this class.
     """
-    def __init__(self, ip, port):
-        if  (self.class_connection_list == []):  # checks if no connection exists
-            self.class_connection_list.append(self.connectToServer(ip, port)) # creating a socket client object and
-            # ... storing it in the first location of the 'class_connection_list'
-            self.class_connection_list.append(ip)  # storing the ip in second location of the list
-            self.class_connection_list.append(port)  # storing the port in second location of the list
-            """
-            Notice that it is necessary to APPEND to the list and not redefine it. because if we redefine,
-            the program will start using a new memory location and this stops the class from having a singleton
-            behaviour
-            """
 
-            t = Thread(target= self.main_thread)
+    def __init__(self):
+        if  (self.class_connection_list == [None, None, None]):  # checks if no connection exists
+
+            self.class_connection_list[2] = 6663
+
+            # connection will be established in the thread
+            t = Thread(target=self.main_thread)
             t.start()
         else:
             # if this else is run, it means that there already exists a connection with the server. So it does not do
-            # ... anything and hence, further objects will use the already existing connection
+            # ~ anything and hence, further objects will use the already existing connection
             pass
 
+    def connectToServer(self): # creates a client and connects it to the server
+        """
+        First we create a UDP client so it can broadcast to all the servers in the network. The intention of doing so is
+        to find the ip address of the server. After this objective is achieved, we establish a rcp connection between
+         the two devices,
+        """
 
-    def connectToServer(self, ip, port): # creates a client and connects it to the server
-        # "ip" is the ip of the server that this client is trying to connect to
+        UDP_client_address = ('<broadcast>', 9999)
+        UDP_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # creating UDP client to broadcast to server
+        UDP_client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)  # this function is called so this object uses
+        # ~ UDP protocol
+
+        UDP_client.settimeout(1)
+
+        connected_to_UDP_server = False
+        while connected_to_UDP_server == False:
+            try:
+                UDP_client.sendto(bytes("A", encoding='utf-8'), UDP_client_address)
+
+                """
+                After broadcasting, if the expected server to listen is listening, it will respond to the letter 'A' 
+                with a letter 'B'. in that case we know that the server and the client have found each other. Which 
+                means that we will have the ip address of the server and then we can establish a TCP connection with the
+                server. This ip address could be found in the 1st index of the tuple 'server_addr'
+                """
+                recv_data_from_server, server_addr = UDP_client.recvfrom(2048)
+                msg = recv_data_from_server.decode('utf-8')
+
+                if msg == "B":
+                    IP_ADDRESS_OF_SERVER = server_addr[0]
+                    connected_to_UDP_server = True
+
+            except socket.timeout:
+                print(" UDP Server not listening")
+
+        # ================= Establishing the TCP connection below this line ===========================
+        self.class_connection_list[1] = IP_ADDRESS_OF_SERVER  # storing the ip in second location of the list
 
         connectedToServer = False  # Defining a boolean to show whether client is connected to server
         while (connectedToServer == False):  # trying to connecting the client to the server while it is not connected
             try:  # program tries to connect to server
                 client = socket.socket()  # creating client object
-                #client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-                address = (ip, port)  # creating address tuple
+                address = (self.class_connection_list[1], self.class_connection_list[2])  # creating address tuple
                 client.connect(address)  # connecting to the server using address
                 connectedToServer = True  # assuming that the client has successfully connected to the server and
-                # ... hence,changing the boolean accordingly (if connecting fails or , the exception clause below will run
+                # ~ hence,changing the boolean accordingly (if connecting fails or , the exception clause below will run
             except ConnectionRefusedError:  # This exception is raised if the server is not listening
                 connectedToServer = False # since there is no server, we change the boolean back to false
                 print("Server not listening...")
                 sleep(1)
-                client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # since there has been a failed connection for the previous client object,
-                client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-                # ...something has changed inside it and hence, it can not try to connect again. So we create a new
-                # client object.
+                client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # since there has been a failed connection
+                # ~ for the previous client object, something has changed inside it and hence, it can not try to
+                # connect again. So we create a new client object.
+
+                # client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+            except ConnectionResetError:
+                connectedToServer = False  # since there is no server, we change the boolean back to false
+                print("Server not listening...")
+                sleep(1)
+                client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # since there has been a failed connection
+                # ~ for the previous client object, something has changed inside it and hence, it can not try to
+                # connect again. So we create a new client object.
+
+                # client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+
+        self.class_connection_list[0] = client
+        self.class_connection_list[0].settimeout(0.5)  # setting a time out for the thread so it doesn't spend time on
+        # ~ the task for more than 0.5 seconds; so if it doesn't receive anything for 0.5 seconds, it stops trying to
+        # ~ receive sth from client and starts sending stuff, if there are any
 
         return client  # returning client, which is a socket object
-
-    def cleanConnectionList(self):  # this method is used to empty the list when the server stops listening
-        for counter in range(3):
-            del self.class_connection_list[0]
 
     def send(self, msg):  # it is used to send data to server
         self.sending_queue.put(msg + "\n")  # adding the message to the class sending  queue
 
     def main_thread(self):  # this is the main thread of the client which is pointed to in the initializer
-        self.class_connection_list[0].settimeout(0.5)  # setting a time out for the thread so it doesn't spend time on
-        # ... the task for more than 0.5 seconds; so if it doesn't receive anything for 0.5 seconds, it stops trying to
-        # ... receive sth from client and starts sending stuff, if there are any
+        self.connectToServer()
         while True:
             try:
                 msg = (self.class_connection_list[0].recv(1024)).decode("utf-8")  # since tye string was encoded to
@@ -100,17 +141,8 @@ class Rover_Communication_Gate:
                     # ... this error is raised if client disconnects
                     print("Server disconnected while trying to receive data from server")
                     sleep(1)
-                    if self.class_connection_list != []:
-                        ip = self.class_connection_list[1]  # storing ip
-                        port = self.class_connection_list[2]  # storing port
-                        self.cleanConnectionList()
-                    self.class_connection_list.append(self.connectToServer(ip, port))  # creating a new client
-                    # ... socket object
-                    # ...and storing it in the first index of class_connection_list
-                    self.class_connection_list.append(ip)  # appending ip to class_connection_list
-                    self.class_connection_list.append(port)  # appending port to class_connection_list
-                    self.class_connection_list[0].settimeout(0.5)  # timeout has to be reset since it is a new
-                    # ... object classConnectionList
+                    self.connectToServer()
+
             else:
                 for item in msg:
                     print(item)
@@ -123,33 +155,19 @@ class Rover_Communication_Gate:
                         currentMsgToSend = self.sending_queue.get()   # storing the msg that is about to be sent so if
                         # ... the client fails to send it, it gets added to the queue and is not lost
                         self.class_connection_list[0].send(bytes(currentMsgToSend, encoding='utf-8'))
-                        #print("DATA WAS SENT TO SERVER")
+                        # print("DATA WAS SENT TO SERVER")
                     except socket.error:
                         self.sending_queue.put(currentMsgToSend)
                         print("Server disconnected while trying to send data to server")
                         sleep(1)
-                        if self.class_connection_list != []:
-                            ip = self.class_connection_list[1]  # storing ip
-                            port = self.class_connection_list[2]  # storing port
-                            self.cleanConnectionList()
-                        self.class_connection_list.append(self.connectToServer(ip, port))  # creating a new client
-                        # ... socket object
-                        # ...and storing it in the first index of class_connection_list
-                        self.class_connection_list.append(ip)  # appending ip to class_connection_list
-                        self.class_connection_list.append(port)  # appending port to class_connection_list
-                        self.class_connection_list[0].settimeout(0.5)  # timeout has to be reset since it is a new
-                        # ... object classConnectionList
+                        self.connectToServer()
 
 
 def main():
-    port = 45454  # setting port to 9999
-    # Setting up client
-    ipOfServer = socket.gethostbyname("")  # getting ip address of the server (this computer for now!)
+    gate = Rover_Communication_Gate()
 
-    gate = Rover_Communication_Gate(ipOfServer, port)
-
-    gate2 = Rover_Communication_Gate("HEEEEYY", 2000000)
-    gate3 = Rover_Communication_Gate("YOOOOOO", 900001)
+    gate2 = Rover_Communication_Gate()
+    gate3 = Rover_Communication_Gate()
 
     for i in range(10000):
         gate.send(str(i))
