@@ -4,9 +4,11 @@ import queue
 from threading import Thread
 import errno
 
-# todo: take care of the ports
-# todo: be aware that one message is lost if a side disconnects (it actually gets added to the queue
-#  but this has not been tested yer)
+# todo: be aware that messages that are failed to be sent due to a failure, are added to the end of the queue, so it
+#  takes them a while to reach the server
+# todo: there are a lot of 'sleep' commands in this program; these are due to enabling the user to see the output of
+#  the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
+#  should be commented out
 
 class Rover_Communication_Gate:
     class_connection_list = [None, None, None]  # class_connection_list --> [client socket Object, ip of server, port]
@@ -27,16 +29,17 @@ class Rover_Communication_Gate:
     """
 
     def __init__(self):
-        if  (self.class_connection_list == [None, None, None]):  # checks if no connection exists
+        if (self.class_connection_list == [None, None, None]):  # checks if no connection exists
 
             self.class_connection_list[2] = 6663
 
             # connection will be established in the thread
             t = Thread(target=self.main_thread)
-            t.start()
+            t.start()  # starting the main thread
         else:
             # if this else is run, it means that there already exists a connection with the server. So it does not do
-            # ~ anything and hence, further objects will use the already existing connection
+            # ~ anything and hence, further objects will use the already existing connection. (ie; this brings a
+            # ~ singleton behaviour to this class
             pass
 
     def connectToServer(self): # creates a client and connects it to the server
@@ -57,7 +60,6 @@ class Rover_Communication_Gate:
         while connected_to_UDP_server == False:
             try:
                 UDP_client.sendto(bytes("A", encoding='utf-8'), UDP_client_address)
-
                 """
                 After broadcasting, if the expected server to listen is listening, it will respond to the letter 'A' 
                 with a letter 'B'. in that case we know that the server and the client have found each other. Which 
@@ -70,9 +72,14 @@ class Rover_Communication_Gate:
                 if msg == "B":
                     IP_ADDRESS_OF_SERVER = server_addr[0]
                     connected_to_UDP_server = True
+                    recv_port_from_server, server_addr = UDP_client.recvfrom(2048)
+                    port_from_server = recv_port_from_server.decode('utf-8')
+                    self.class_connection_list[2] = int(port_from_server)
+                    print("the port from server is: " + str(self.class_connection_list[2]))
 
             except socket.timeout:
                 print(" UDP Server not listening")
+                connected_to_UDP_server = False
 
         # ================= Establishing the TCP connection below this line ===========================
         self.class_connection_list[1] = IP_ADDRESS_OF_SERVER  # storing the ip in second location of the list
@@ -87,7 +94,9 @@ class Rover_Communication_Gate:
                 # ~ hence,changing the boolean accordingly (if connecting fails or , the exception clause below will run
             except ConnectionRefusedError:  # This exception is raised if the server is not listening
                 connectedToServer = False # since there is no server, we change the boolean back to false
-                print("Server not listening...")
+                print("(refused) Server not listening...")
+                print(self.class_connection_list[2])
+                print(IP_ADDRESS_OF_SERVER)
                 sleep(1)
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # since there has been a failed connection
                 # ~ for the previous client object, something has changed inside it and hence, it can not try to
@@ -97,7 +106,7 @@ class Rover_Communication_Gate:
 
             except ConnectionResetError:
                 connectedToServer = False  # since there is no server, we change the boolean back to false
-                print("Server not listening...")
+                print("(reset) Server not listening...")
                 sleep(1)
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # since there has been a failed connection
                 # ~ for the previous client object, something has changed inside it and hence, it can not try to
@@ -145,7 +154,8 @@ class Rover_Communication_Gate:
 
             else:
                 for item in msg:
-                    print(item)
+                    print(item)  # todo: this print statement must be changed to a function call to merge with the shell
+                    # todo: (only for UVic Robotics use)
 
             for counter in range(10):  # this for loop is intended to send 10 messages to the station
                 if self.sending_queue.empty():
@@ -165,7 +175,6 @@ class Rover_Communication_Gate:
 
 def main():
     gate = Rover_Communication_Gate()
-
     gate2 = Rover_Communication_Gate()
     gate3 = Rover_Communication_Gate()
 

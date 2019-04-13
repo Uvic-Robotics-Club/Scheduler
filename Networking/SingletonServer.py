@@ -4,14 +4,10 @@ import queue
 from threading import Thread
 import errno  # this is used for handling specific errors for the socket module
 
-"""
-Note:
-Anything that has the potential to block should be in the thread not in main
-"""
-
-# todo: take care of the ports
-# todo: be aware that one message is lost if a side disconnects (it actually gets added to the queue
-#  but this has not been tested yer)
+# todo: be aware that messages that are failed to be sent due to a failure, are added to the end of the queue, so it
+#  takes them a while to reach the client
+#  the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
+#  should be commented out
 
 
 class Station_Communication_Gate():
@@ -41,6 +37,33 @@ class Station_Communication_Gate():
         then we will establish a TCP connection between the two devices.
 
         """
+        self.classConnectionList[0] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # creating a server socket
+        # ... and storing it in index 0 of classConnectionList
+        self.classConnectionList[1] = socket.gethostbyname("")  # storing ip in index 1
+
+        """
+        Due to the use of threads in this programme, sometimes when a process is killed (in this case only the server)
+        the socket does not close, and hence the address that the server has bind to, will still be in use. Thus, when 
+        the program is rerun, and the server tries to bind to the address, the ' address already in use' error wil 
+        occur. to take care of this, we have the below try and catch clauses so that id an address is already in use, 
+        the port number would be incremented by 1, and then both port number and the ip address of the server would be 
+        sent to the UDP client using a UDP server and the a TCP connection would be established between the two sides.
+        """
+        while True:
+            try:
+                self.classConnectionList[0].bind((self.classConnectionList[1], self.classConnectionList[2]))  # binding
+                # ~ the server to the address(ip, port)
+                break
+            except socket.error:
+                self.classConnectionList[2] = (self.classConnectionList[2] + 1) % 65533
+                print()
+                if (self.classConnectionList[2] == 1024):  # dicey port; better to be avoided
+                    self.classConnectionList[2] = (self.classConnectionList[2] + 1) % 65533
+                if (self.classConnectionList[2] == 2048):  # dicey port; better to be avoided
+                    self.classConnectionList[2] = (self.classConnectionList[2] + 1) % 65533
+                if (self.classConnectionList[2] == 9999):  # dicey port; better to be avoided
+                    self.classConnectionList[2] = (self.classConnectionList[2] + 1) % 65533
+                print("the port incremented to: " + str(self.classConnectionList[2]))
 
         UDP_address = (socket.gethostbyname(""), 9999)  # the address that the udp server will bind to
         UDP_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # creating a UDP server to listen to broadcasts
@@ -57,7 +80,9 @@ class Station_Communication_Gate():
             msg = recv_data.decode("utf-8")  # decoding the received message from client
 
             if (msg == "A"):
+                print("the correct UDP client connected")
                 UDP_server.sendto(bytes("B", encoding='utf-8'), UDP_client_adr)
+                UDP_server.sendto(bytes(str(self.classConnectionList[2]), encoding='utf-8'), UDP_client_adr)
                 UDP_client_connected = True
 
             else:
@@ -65,12 +90,10 @@ class Station_Communication_Gate():
 
         UDP_server.close()  #closing the server
 
-        # ========================== Establishing TCP connection below ====================================
-        self.classConnectionList[0] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # creating a server socket
-        # ... and storing it in index 0 of classConnectionList
-        self.classConnectionList[1] = socket.gethostbyname("")  # storing ip in index 1
-        self.classConnectionList[0].bind((self.classConnectionList[1], self.classConnectionList[2]))  # binding the server to the address(ip, port)
         self.classConnectionList[0].listen(1)  # server starts listening
+
+        UDP_server.close()  # closing the server
+
         print("Server started listening:", self.classConnectionList[1], ":", self.classConnectionList[2])
 
         client, clientAddress = self.classConnectionList[0].accept()
@@ -81,22 +104,8 @@ class Station_Communication_Gate():
         # ... task for more than two seconds; so if it doesn't receive anything for 0.5 seconds, it stops trying to
         # ... receive sth from client and starts sending stuff, if there are any
 
-
-        """
-        Note that when client disconnects and server is trying to reconnect, server must not try to bind to its 
-        address again. Hence we have two distinct methods connect and reconnect. 
-        Scine the code in "reconnect" is used in "connect", it has been called there.
-        Connect is only and only called at the beginning of the thread and reconnect is called when client disconnects. 
-        
-        """
-
-    def close_socket(self):
-        self.classConnectionList[0].close()
-
-
     def send(self, msg):  # it is used to send data to client
         self.sending_queue.put(msg + "\n")  # adds the msg to the sending_queue
-
 
     def main_thread(self):  # this is the main thread of the server which is pointed to in the initializer
 
@@ -123,7 +132,8 @@ class Station_Communication_Gate():
                     self.connect()
             else:  # runs only if no exception has been raised
                 for item in msg:
-                    print(item)
+                    print(item)  # todo: this print statement must be changed to a function call to merge with the shell
+                    # todo: (only for UVic Robotics use)
 
             for counter in range(10):  # the for loop is intended to send 10 messages to the rover
                 if self.sending_queue.empty():  # checking if the sending_queue is not empty
@@ -147,31 +157,9 @@ class Station_Communication_Gate():
                         pass
 
 
-def kill(s):
-    inp = input(" ")
-    while True:
-        if inp == "k":
-            s.close_socket()
-            break
-        else:
-            pass
-
-
-    print("KILLSHOT")
-
-
-
 def main():
-    ip = socket.gethostbyname("")  # Getting ip address of the computer
-    port = 45454  # setting port to 9999
     gate = Station_Communication_Gate()
     gateS2 = Station_Communication_Gate()
-
-    #"""
-    #l = Thread(target=kill, args= (gate) )  # setting the main thread
-    #l.start()
-    print("got here?")
-    #"""
 
 
     for i in range(10000):
