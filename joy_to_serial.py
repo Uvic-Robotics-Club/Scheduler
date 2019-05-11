@@ -44,6 +44,9 @@ class Arduino_arm_control:
 		# print(lowerSpeed, end=' ')
 		# print(upperSpeed)
 
+		rotateSpeed = int(axesData[1] * 10)
+
 		self.ser.write(bytes(str(lowerSpeed) + ' ', encoding="ascii"))
 		self.ser.write(bytes(str(upperSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(rotateSpeed) + " ", encoding="ascii"))
 		self.ser.write(bytes(str(314) + "\n", encoding="ascii"))
