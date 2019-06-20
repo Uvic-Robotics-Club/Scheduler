@@ -110,3 +110,35 @@ class Joy_control:
 			print("Button " + str(i) + " pressed.")
 		for i in buttonData[1]:
 			print("Button " + str(i) + " released.")
+
+# Splits joystick data between multiple groups of functions, based on joystick presses
+class Joy_splitter:
+	def __init__(self):
+		self.groups = {0:tuple([]), 1:tuple([]), 2:tuple([])}
+		self.groupMap = {0:6, 1:8, 2:10}
+		self.currGroup = 0
+
+	def event_function(self, axesData, hatData, buttonData):
+		# change groups if needed
+		# note we only change group on button press, and simultaneous press behaviour isn't specified
+		for i in range(3):
+			if self.groupMap[i] in buttonData[0]:
+				self.currGroup = i
+				break
+
+		# Run all functions in the current group
+		# TODO: change this to adding work to the queue instead of a direct call
+		for f in self.groups[self.currGroup]:
+			f(axesData, hatData, buttonData)
+
+	# Adds a function to the specified group
+	# Returns true if successful, or false if the group doesn't exist
+	def add_function_to_call(self, function, groupNum):
+		if groupNum not in self.groupMap:
+			return False
+
+		# add fucntion to appropriate list
+		li = list(self.groups[groupNum])
+		li.append(function)
+		self.groups[groupNum] = tuple(li)
+		return True

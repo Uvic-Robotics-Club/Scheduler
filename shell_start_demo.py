@@ -12,18 +12,20 @@ def main():
 
 	# Joystick input
 	joy = Joy_control()
+	joy.add_function_to_call(joy.print_joy_data)
 	functs.append(joy.poll_function)
 
-	joySplit = Joy_splitter()
-	joy.add_function_to_call(joySplit.event_function)
-
-	joySplit.add_function_to_call(joy.print_joy_data, 0)
-	joySplit.add_function_to_call(joy.print_joy_data, 1)
-	joySplit.add_function_to_call(joy.print_joy_data, 1)
-
-	# Link joystick to lower arm control
+	# Link joystick to arduino (arm) control
 	ser = Arduino_arm_control()
 	joy.add_function_to_call(ser.write_to_arduino)
+
+	functs = []
+
+	# Objects to demo multithreading. Don't actually do anything but print stuff
+	obj = shell.Demo_obj(2)
+	functs.append(obj.poll_function)
+	obj = shell.Demo_obj(1.2)
+	functs.append(obj.poll_function)
 
 	# Initialize and start the program
 	# '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
