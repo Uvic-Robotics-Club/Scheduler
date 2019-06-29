@@ -6,7 +6,7 @@ from shell_types import *
 
 class Shell:
 	# threadCount: the maximum number of threads at one time.
-	# pollFunctionsList: the list of functions to run through continuously
+	# pollFunctionsList: the list of poll functions to run through continuously
 	def __init__(self, threadCount, pollFunctionsList):
 		self.pq = queue.PriorityQueue()
 		self.stop = True
@@ -50,6 +50,7 @@ class Shell:
 			for f in self.pfl:
 				res = f()
 				if res:
+					# note: funct would be better off renamed "pq_obj" - it's not a function; it's a Pq_obj
 					for funct in res:
 						self.pq.put(funct)
 

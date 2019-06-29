@@ -12,6 +12,7 @@ def main():
 
 	# Joystick input
 	joy = Joy_control()
+	# Make it so that the printer function is called as part of the event function
 	joy.add_function_to_call(joy.print_joy_data)
 	functs.append(joy.poll_function)
 
