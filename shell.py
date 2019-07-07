@@ -66,7 +66,7 @@ class Shell:
 			else:
 				sleep(0.01)
 
-	# Takes a single task from the queue, runs it, and places the return in the queue
+	# Takes a single task from the queue, runs it, and places the returned task(s) back in the queue
 	# inputs: target: a function, taking 0 or one arguments
 	# args: a single argument (can be anything) or None. Not passed to function if given None
 	def funct_runner(self, target, args):
