@@ -1,5 +1,6 @@
 # This class is imported anywhere that needs to be able to put work on the 'pq' priority queue in a Shell.
 # Create an instance add_pq_obj to add work to the Shell's priority queue.
+# The first instantiation of workAdder must be fed a Shell. After that, all subsequent instantiations do not need any parameters.
 
 from shell_types import Pq_obj
 
