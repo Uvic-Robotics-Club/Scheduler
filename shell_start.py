@@ -60,7 +60,7 @@ def main():
 	wA = workAdder.workAdder(s)
 	s.run()
 	obj = shell.Demo_obj(3.14)
-	wA.__add_pq_obj__(Pq_obj(3, stupid_print))
+	wA.add_pq_obj(Pq_obj(3, stupid_print))
 
 
 if __name__ == '__main__':
