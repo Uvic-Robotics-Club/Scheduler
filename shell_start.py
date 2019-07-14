@@ -4,8 +4,8 @@ import workAdder
 from shell_types import *
 
 # place all object imports here:
-# from joy_control import *
-# from joy_to_serial import *
+from joy_control import *
+from joy_to_serial import *
 
 def stupid_print():
 	print("Here's your print statement, stupid")
@@ -27,7 +27,7 @@ def main():
 	#
 	# # Link joystick to arduino (arm) control
 	# ser = Arduino_arm_control()
-	# joy.add_function_to_call(ser.write_to_arduino)
+	# joy.add_function_to_call(ser.write_to_arm)
 	#
 	# functs = []
 	#
@@ -46,10 +46,19 @@ def main():
 	functs = []
 
 	# Objects to demo multithreading. They just print stuff to show it's working
-	obj = shell.Demo_obj(2)
-	functs.append(obj.poll_function)
-	obj = shell.Demo_obj(1.2)
-	functs.append(obj.poll_function)
+	# obj = shell.Demo_obj(2)
+	# functs.append(obj.poll_function)
+	# obj = shell.Demo_obj(1.2)
+	# functs.append(obj.poll_function)
+
+	# initialize joystick input
+	joy = Joy_control()
+
+	# Link joystick to arduino (arm) control
+	ser = Arduino_arm_control()
+	joy.add_function_to_call(ser.print_power)
+	# joy.add_function_to_call(joy.print_joy_data)
+	functs.append(joy.poll_function)
 
 
 

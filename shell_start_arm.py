@@ -20,7 +20,7 @@ def main():
 
 	# Link joystick to arduino (arm) control
 	ser = Arduino_arm_control()
-	joy.add_function_to_call(ser.write_to_arduino)
+	joy.add_function_to_call(ser.write_to_arm)
 
 	# Initialize and start the program
 	# '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
