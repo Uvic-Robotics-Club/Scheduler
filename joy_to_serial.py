@@ -61,7 +61,8 @@ class Arduino_arm_control:
 		power_array = [0, 0, 0, 0]
 
 		# If the joystick is centred, engage swivel mode
-		if abs(axesData[0]) < 0.05 and abs(axesData[1]) < 0.05:
+		# Note that the constants to engage "swivel mode" also create a dead zone
+		if abs(axesData[0]) < 0.14 and abs(axesData[1]) < 0.14:
 			if abs(axesData[2]) > 0.2:
 				power_array = [-axesData[2], -axesData[2], -axesData[2], -axesData[2]]
 
