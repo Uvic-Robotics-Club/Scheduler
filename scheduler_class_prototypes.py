@@ -23,7 +23,7 @@ class Sample_producer:
 		# -------------   Optional: ADD CODE HERE   -------------
 		# Note: most stuff should be linked in the start file instead of hard-coded.
 
-	# Add this function to shell's poll list. For consistency, do not rename.
+	# Add this function to Scheduler's poll list. For consistency, do not rename.
 	def poll_function(self):
 		if time() - self.time > self.pollRate and self.inQueueCount < self.maxInQueue:
 			# Update internal time to when it was most recently added to the queue

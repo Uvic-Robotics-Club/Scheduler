@@ -1,7 +1,7 @@
-import shell
+import scheduler
 import workAdder
 
-from shell_types import *
+from scheduler_types import *
 
 # place all object imports here:
 from joy_control import *
@@ -32,23 +32,23 @@ def main():
 	# functs = []
 	#
 	# # Objects to demo multithreading. Don't actually do anything but print stuff
-	# obj = shell.Demo_obj(2)
+	# obj = scheduler.Demo_obj(2)
 	# functs.append(obj.poll_function)
-	# obj = shell.Demo_obj(1.2)
+	# obj = scheduler.Demo_obj(1.2)
 	# functs.append(obj.poll_function)
 	#
 	# # Initialize and start the program
 	# # '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
-	# s = shell.Shell(8, functs)
+	# s = scheduler.Scheduler(8, functs)
 	# s.run()
 
 	# Initialize list of functions to poll
 	functs = []
 
 	# Objects to demo multithreading. They just print stuff to show it's working
-	# obj = shell.Demo_obj(2)
+	# obj = scheduler.Demo_obj(2)
 	# functs.append(obj.poll_function)
-	# obj = shell.Demo_obj(1.2)
+	# obj = scheduler.Demo_obj(1.2)
 	# functs.append(obj.poll_function)
 
 	# initialize joystick input
@@ -64,11 +64,11 @@ def main():
 
 	# Initialize and start the program
 	# '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
-	s = shell.Shell(8, functs)
+	s = scheduler.Scheduler(8, functs)
 	# Create the workAdder singleton
 	wA = workAdder.workAdder(s)
 	s.run()
-	obj = shell.Demo_obj(3.14)
+	obj = scheduler.Demo_obj(3.14)
 	wA.add_pq_obj(Pq_obj(3, stupid_print))
 
 
