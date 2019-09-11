@@ -7,7 +7,7 @@ class Arduino_arm_control:
 		self.time = time()
 
 		# Try to open a
-		self.portsToTry = ['COM3', 'COM5', 'COM4', '/dev/ttyUSB0', '/dev/ttyUSB1',
+		self.portsToTry = ['COM3', 'COM5', 'COM4', 'COM6', 'COM7', 'COM8', '/dev/ttyUSB0', '/dev/ttyUSB1',
 							'/dev/ttyAMA0', '/dev/ttyAMA1', '/dev/ttyACM0', '/dev/ttyACM1']
 
 		self.ser = None
@@ -50,6 +50,52 @@ class Arduino_arm_control:
 		self.ser.write(bytes(str(upperSpeed) + " ", encoding="ascii"))
 		self.ser.write(bytes(str(rotateSpeed) + " ", encoding="ascii"))
 		self.ser.write(bytes(str(314) + "\n", encoding="ascii"))
+
+	def write_to_claw(self, axesData, hatData, buttonData):
+		# Ensure we have the port.
+		if not self.ser:
+			return
+
+		# Ensure we don't overwhelm the serial (or stall main program)
+		# TODO: make this unique for this method and write_to_arm (good practice)
+		if time() - self.time < 0.05:
+			return
+
+		self.time = time()
+
+		# Mapped from -100 to 100, with positive being forward, negative being backward
+		# actually only use -20 to 20
+		tiltSpeed = 0 - int(axesData[0] * 20)
+
+		# Create a small dead zone
+		if tiltSpeed < 5 and tiltSpeed > -5:
+			tiltSpeed = 0
+
+		# Mapped from -100 to 100, with positive being forward, negative being backward
+		# actually only use -20 to 20
+		rotateSpeed = int(axesData[2] * 20)
+
+		# Create a small dead zone
+		if rotateSpeed < 5 and rotateSpeed > -5:
+			rotateSpeed = 0
+
+		clawSpeed = 0
+		if buttonData[2][0]:
+			clawSpeed = 255
+		if buttonData[2][1]:
+			clawSpeed = -255
+
+		self.ser.write(bytes(str(rotateSpeed) + ' ', encoding="ascii"))
+		self.ser.write(bytes(str(tiltSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(clawSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(rotateSpeed * 100 + tiltSpeed * 10 + clawSpeed) + " ", encoding="ascii"))
+		self.ser.write(bytes(str(315) + "\n", encoding="ascii"))
+
+		# # print(rotateSpeed, tiltSpeed, clawSpeed)
+		# assert clawSpeed is 0
+		# assert tiltSpeed is 0
+		# assert rotateSpeed is 0
+		# print(self.ser.read_all())
 
 	# This function does all the calculations to turn joystick input into drive motor output.
 	def print_power(self, axesData, hatData, buttonData):
