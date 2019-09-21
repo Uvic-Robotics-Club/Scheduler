@@ -6,7 +6,7 @@ import errno
 
 # todo: be aware that messages that are failed to be sent due to a failure, are added to the end of the queue, so it
 #  takes them a while to reach the server
-# todo: there are a lot of 'sleep' commands in this program; these are due to enabling the user to see the output of
+# todo: there are a lot of 'sleep' commands in this program; these are there to enable the user to see the output of
 #  the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
 #  should be commented out
 
@@ -45,7 +45,7 @@ class Rover_Communication_Gate:
     def connectToServer(self): # creates a client and connects it to the server
         """
         First we create a UDP client so it can broadcast to all the servers in the network. The intention of doing so is
-        to find the ip address of the server. After this objective is achieved, we establish a rcp connection between
+        to find the ip address of the server. After this objective is achieved, we establish a tcp connection between
          the two devices,
         """
 

@@ -6,8 +6,9 @@ import errno  # this is used for handling specific errors for the socket module
 
 # todo: be aware that messages that are failed to be sent due to a failure, are added to the end of the queue, so it
 #  takes them a while to reach the client
-#  the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
-#  should be commented out
+# todo: there are a lot of 'sleep' commands in this program; these are there to enable the user to see the output of
+#   the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
+#   should be commented out
 
 
 class Station_Communication_Gate():
