@@ -15,7 +15,7 @@ It's also where the threading magic happens
 Thread 1: communication
   Mostly for inputs. When given something by an Arduino or the phone, it converts that input into a task for Thread 2
 Thread 2: Priority Queue of tasks
-  Tasks being custom objects holding function pointers and inmput parameters
+  Tasks being custom objects holding function pointers and input parameters
   Priority scale 1-5 (tentatively) - too many levels would cause backlogs of low-priority tasks
 	By tasks, we mean MAJOR method calls likely to call many smaller methods
 	Added by timer or external request
