@@ -65,7 +65,7 @@ class Arduino_arm_control:
 
 		# Mapped from -100 to 100, with positive being forward, negative being backward
 		# actually only use -20 to 20
-		tiltSpeed = 0 - int(axesData[0] * 20)
+		tiltSpeed = 0 - int(axesData[0] * 100)
 
 		# Create a small dead zone
 		if tiltSpeed < 5 and tiltSpeed > -5:
@@ -73,7 +73,7 @@ class Arduino_arm_control:
 
 		# Mapped from -100 to 100, with positive being forward, negative being backward
 		# actually only use -20 to 20
-		rotateSpeed = int(axesData[2] * 20)
+		rotateSpeed = int(axesData[2] * 100)
 
 		# Create a small dead zone
 		if rotateSpeed < 5 and rotateSpeed > -5:
