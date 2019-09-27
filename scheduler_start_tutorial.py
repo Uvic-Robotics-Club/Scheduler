@@ -14,8 +14,8 @@ def main():
 	# Part 1
 	# Create a timer and add it to the our list of poll functions
 
-	# timer = Self_contained_timer(1)
-	# pollFuncts.append(timer.poll_function)
+	timer = Self_contained_timer(1)
+	pollFuncts.append(timer.poll_function)
 
 	# ----------------------------------------------------------------
 	# Part 2
@@ -47,8 +47,8 @@ def main():
 	# There's no restriction on who can call what as long as (a) you don't create any loops, and
 	# (b) the parameters of the producer match the consumer
 
-	m.add_function_to_call(c4.on_event)
-	p2.add_function_to_call(c4.on_event)
+	# m.add_function_to_call(c4.on_event)
+	# p2.add_function_to_call(c4.on_event)
 
 	# ----- Below here will rarely need to change -----
 
