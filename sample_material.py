@@ -2,7 +2,8 @@ from scheduler_types import Pq_obj
 
 from time import time, sleep
 
-#Simple object for testing Scheduler. Uses a polled timer to add a task to the queue, which then prints
+
+# Simple object for testing Scheduler. Uses a polled timer to add a task to the queue, which then prints
 class Self_contained_timer:
 	def __init__(self, val):
 		self.val = val
@@ -96,7 +97,9 @@ class Simple_middleman:
 class Simple_consumer:
 	def __init__(self, modNum):
 		self.modNum = modNum
+		self.total = 0
 
 	def on_event(self, number):
-		if number % self.modNum is 0:
-			print(number, 'is divisible by', self.modNum)
+		self.total += number
+		if self.total % self.modNum is 0:
+			print(self.total, 'is divisible by', self.modNum)
