@@ -1,7 +1,7 @@
 #Object accounting for button presses
 #Polled constantly
 
-from shell_types import Pq_obj
+from scheduler_types import Pq_obj
 from time import time
 import pygame
 

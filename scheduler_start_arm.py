@@ -1,9 +1,9 @@
-import shell
+import scheduler
 
 # place all object imports here:
 from joy_control import *
 from joy_to_serial import *
-from shell_class_prototypes import *
+from scheduler_class_prototypes import *
 
 def main():
 	# Initialize list of functions to poll
@@ -24,7 +24,7 @@ def main():
 
 	# Initialize and start the program
 	# '8' is the maximum number of simultaneous threads, and 'functs' is the polling function list
-	s = shell.Shell(8, functs)
+	s = scheduler.Scheduler(8, functs)
 	s.run()
 
 

@@ -1,10 +1,10 @@
 import threading
 import queue
 from time import sleep, time
-from shell_types import *
+from scheduler_types import *
 
 
-class Shell:
+class Scheduler:
 	# threadCount: the maximum number of threads at one time.
 	# pollFunctionsList: the list of poll functions to run through continuously
 	def __init__(self, threadCount, pollFunctionsList):
@@ -14,13 +14,13 @@ class Shell:
 
 		self.pfl = pollFunctionsList
 		# Requires at least 3 threads to run
-		# Note: number is 4 due to it returning control (which is a thread) to whatever called shell.start
+		# Note: number is 4 due to it returning control (which is a thread) to whatever called Scheduler.start
 		# Note: program might be more efficient with more threads (less time burned in main threads)
 		if threadCount < 4:
 			threadCount = 4
 		self.maxThreads = threadCount
 
-	# Start both necessary threads, then return control. Runs until a shell.stop() call
+	# Start both necessary threads, then return control. Runs until a Scheduler.stop() call
 	def run(self):
 		self.stop = False
 		t = threading.Thread(target=self.poll_loop)
@@ -81,10 +81,10 @@ class Shell:
 
 
 # -------------------------------------------------------------------------------------------
-# Below this line is NOT part of Shell's implementation
+# Below this line is NOT part of Scheduler's implementation
 
 
-# Simple object for testing Shell. Uses a polled timer to add a task to the queue, which then prints
+# Simple object for testing Scheduler. Uses a polled timer to add a task to the queue, which then prints
 class Demo_obj:
 	def __init__(self, val):
 		self.val = val
@@ -118,10 +118,10 @@ def main():
 	obj = Demo_obj(1.414)
 	functions.append(obj.poll_function)
 
-	shell = Shell(8, functions)
-	shell.run()			# Start both loops
+	scheduler = Scheduler(8, functions)
+	scheduler.run()			# Start both loops
 	# sleep(6)
-	# shell.stop()
+	# scheduler.stop()
 
 
 if __name__ == "__main__":
