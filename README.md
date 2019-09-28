@@ -1,4 +1,4 @@
-# Shell
+# Scheduler
 The new central software.
 
 This readme is currently a rough outline for Greg and Andrew's scheme to replace ROS in the UVic Robotics Rover.
