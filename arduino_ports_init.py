@@ -29,6 +29,7 @@ class Arduino_serial_finder:
 	# connected to it. It then uses the serial connection to interact with the arduino using read 
 	# and write instructions.
 	def scan_ports_initialize(self):
+		NumTrails = 1
 		for i in ports:
 			if ('usb') in i[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
@@ -36,10 +37,12 @@ class Arduino_serial_finder:
 				ArduinoUnoSerial = serial.Serial(i[0], 9600, timeout=0.05, write_timeout=0.05)
 				arduino_id_response = ''
 				# if the read times-out, we try again until we get its response.
-				# SHOULD BE MODIFIED TO TRY ONLY A FEW TIMES.
 				while(not arduino_id_response):
+					if NumTrails > 3:
+						raise Exception('Error: Read instruction timed out multiple times; unable to read from arduino')
 					ArduinoUnoSerial.write(b'id')
 					arduino_id_response = str(ArduinoUnoSerial.read(5), encoding='ascii')
+					NumTrails += 1
 				self.book[arduino_id_response] = ArduinoUnoSerial
 
 
