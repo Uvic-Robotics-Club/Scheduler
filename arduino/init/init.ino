@@ -1,3 +1,4 @@
+//
 bool start = false;
 int ledPin = 13;
 void setup() {
@@ -8,7 +9,7 @@ void setup() {
 void loop() {
   String data = Serial.readString();
   if (data == "id") {
-    Serial.println("G-Uno");
+    Serial.println("Nano");
     start = true;
   }
   if (start == true) {

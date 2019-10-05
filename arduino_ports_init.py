@@ -19,6 +19,7 @@ class Arduino_serial_finder:
 	# if registered
 	def get_serial(self, arduino_id):
 		for i in self.book:
+			print(i)
 			if arduino_id in i:
 				return self.book[i]
 		return None
@@ -38,8 +39,6 @@ class Arduino_serial_finder:
 				arduino_id_response = ''
 				# if the read times-out, we try again until we get its response.
 				while(not arduino_id_response):
-					if NumTrails > 3:
-						raise Exception('Error: Read instruction timed out multiple times; unable to read from arduino')
 					ArduinoUnoSerial.write(b'id')
 					arduino_id_response = str(ArduinoUnoSerial.read(5), encoding='ascii')
 					NumTrails += 1
