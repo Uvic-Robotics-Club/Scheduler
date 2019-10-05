@@ -30,7 +30,6 @@ class Arduino_serial_finder:
 	# connected to it. It then uses the serial connection to interact with the arduino using read 
 	# and write instructions.
 	def scan_ports_initialize(self):
-		NumTrails = 1
 		for i in ports:
 			if ('usb') in i[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
@@ -41,7 +40,6 @@ class Arduino_serial_finder:
 				while(not arduino_id_response):
 					ArduinoUnoSerial.write(b'id')
 					arduino_id_response = str(ArduinoUnoSerial.read(5), encoding='ascii')
-					NumTrails += 1
 				self.book[arduino_id_response] = ArduinoUnoSerial
 
 
