@@ -6,9 +6,10 @@ import errno  # this is used for handling specific errors for the socket module
 
 # todo: be aware that messages that are failed to be sent due to a failure, are added to the end of the queue, so it
 #  takes them a while to reach the client
-# todo: there are a lot of 'sleep' commands in this program; these are there to enable the user to see the output of
+# todo: there are 'sleep' commands in this program; these are there to enable the user to see the output of
 #   the programme and make sure of the correct functionality. However, while using the class for actual purposes, these
-#   should be commented out
+#   should be commented out.
+# todo: The main function is only written to test the class. It is not necessary to have it.
 
 
 class Station_Communication_Gate():
@@ -157,7 +158,8 @@ class Station_Communication_Gate():
                     else:
                         pass
 
-
+"""
+# The main function is only written to test the class. It is not necessary to have it.
 def main():
     gate = Station_Communication_Gate()
     gateS2 = Station_Communication_Gate()
@@ -170,3 +172,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+"""

@@ -173,6 +173,9 @@ class Rover_Communication_Gate:
                         self.connectToServer()
 
 
+# The below "main" is written to demonstrate the functionality
+"""
+# The main function is only written to test the class. It is not necessary to have it.
 def main():
     gate = Rover_Communication_Gate()
     gate2 = Rover_Communication_Gate()
@@ -185,3 +188,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+"""
