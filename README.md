@@ -31,3 +31,9 @@ OUTBOUND COMMUNICATION
 Microcontrollers are spoken to through USB
 	Need to look into means of communication between Brain and Arduinos
 
+# Documentation
+
+The `Scheduler` class in scheduler.py is executed and interacted with the help of 2 main threads. This is illustrated in the following sequence diagram:
+
+![Scheduler Sequence Diagram](images/scheduler_sequence_diagram.png)
+
