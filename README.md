@@ -1,7 +1,6 @@
 # Scheduler
-The new central software.
 
-This readme is currently a rough outline for Greg and Andrew's scheme to replace ROS in the UVic Robotics Rover.
+The new central software.
 
 We are ditching ROS because of many reasons including the steep learning curve, its incompatibility with Windows, and its inability to teach transferable skills to new recruits.
 
@@ -12,30 +11,15 @@ Rather than having ROS subscribers and publishers, methods will be called when d
 SHELL.PY would run basically everything; it is replacing "roscore"
 It's also where the threading magic happens
 
-Thread 1: communication
-  Mostly for inputs. When given something by an Arduino or the phone, it converts that input into a task for Thread 2
-Thread 2: Priority Queue of tasks
-  Tasks being custom objects holding function pointers and inmput parameters
-  Priority scale 1-5 (tentatively) - too many levels would cause backlogs of low-priority tasks
-	By tasks, we mean MAJOR method calls likely to call many smaller methods
-	Added by timer or external request
-Threads 3-X: Tasks
-	Whenever a task finishes, pop the Priority Queue
-
 Most information will be held by individual tasks. Most information transfer will be carried out by tasks themselves, but we WILL want a database that logs science data, performance statistics, system monitoring, and keeping other records
 
+# Explanation
 
-OUTBOUND COMMUNICATION
-(to microcontrollers and base station)
+The Scheduler is a mechanism that allows us to place a sequence of tasks into a queue, and executes each task in an ordered fashion that streamlines communication between different parts of the system. For example, instead of a class having to directly reference multiple other classes, it does not have to worry about that, and is only concerned with passing the data to the scheduler when needed.
 
-Microcontrollers are spoken to through USB
-	Need to look into means of communication between Brain and Arduinos
+`Scheduler` is driven by 2 main threads. When a `Scheduler` instance is instantiated, a list of functions (`pollFunctionsList` in the constructor) is stored. The meaning of a "polling" function is essentially that it is a function that is called on a regular interval. The essence of the class is that each function in `pollFunctionsList` "produces" data (perhaps a number or a list with useful information) that will be "consumed" (i.e used one way or another) by a consumer, likely another class somewhere in the application.
 
-# Documentation
-
-The `Scheduler` class is driven by 2 main threads of execution. When a `Scheduler` instance is instantiated, a list of poll functions (`pollFunctionsList` in the constructor) is stored. The essence of the class is that each function stored in `pollFunctionsList` will be executed at a regular interval defined in the scheduler class.
-
- Then, when `run()` is called, this creates and starts the 2 main threads. The 2 threads are created with the following lines:
+ Then, when `Scheduler.run()` is called on the scheduler instance, this creates and starts the 2 main threads. The 2 threads are created with the following lines:
 
 ``` 
 	t = threading.Thread(target=self.poll_loop)
@@ -48,8 +32,26 @@ The `Scheduler` class in scheduler.py is executed and interacted with the help o
 
 ![Scheduler Sequence Diagram](images/scheduler_sequence_diagram.png)
 
-It is helpful to begin tracing the behavior of the `Scheduler` class by following _Thread 1_. At a defined interval, the thread will fetch all the functions in `pollFunctionsList` (a.k.a `self.pfl` in the class), and push each function onto `pq`, which is the queue of tasks that need to be executed.
+To explain the behavior of the class, we must known what each thread does:
+- **Thread 1**: Used as an "input" to the scheduler. It calls the function defined by the producer, and places the list of functions to be called (all of them located in "consumer" classes) into the priority queue.
+- **Thread 2**: Priority queue execution; the thread pulls functions from the queue and creates a new thread for the function to run in. By the nature of the priority queue, when the thread pulls functions from the queue, it gets given the functions with the highest priority first.
+- **Thread 3-X**: Each thread is associated with a task, which when the function completes, the thread completes.
+
+
+It is helpful to begin understanding the behavior of `Scheduler` by following _Thread 1_. At a defined interval, the thread will fetch all the functions in `pollFunctionsList` (a.k.a `self.pfl` in the class), and push each function onto `pq`, which is the queue of tasks that need to be executed.
 
 On the other hand, _Thread 2_ handles the actual execution of each function that has been pushed in `pq`, as it continuously fetches any functions that are in `pq`. After fetching a function from it, it starts a thread for **each** function.
 
 ![Scheduler Example Diagram](images/scheduler_example.png)
+
+# Use Cases
+
+The scheduler is expected to be used for the folllowing main use cases:
+- Outbound communication from rover to base station 
+- Inbound communication from base station to rover
+- Communication between microcontrollers on the rover 
+
+# Improvements
+
+Microcontrollers are spoken to through USB
+	Need to look into means of communication between Brain and Arduinos
