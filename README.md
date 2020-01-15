@@ -1,4 +1,4 @@
-# Shell
+# Scheduler
 The new central software.
 
 This readme is currently a rough outline for Greg and Andrew's scheme to replace ROS in the UVic Robotics Rover.
@@ -33,7 +33,23 @@ Microcontrollers are spoken to through USB
 
 # Documentation
 
-The `Scheduler` class in scheduler.py is executed and interacted with the help of 2 main threads. This is illustrated in the following sequence diagram:
+The `Scheduler` class is driven by 2 main threads of execution. When a `Scheduler` instance is instantiated, a list of poll functions (`pollFunctionsList` in the constructor) is stored. The essence of the class is that each function stored in `pollFunctionsList` will be executed at a regular interval defined in the scheduler class.
+
+ Then, when `run()` is called, this creates and starts the 2 main threads. The 2 threads are created with the following lines:
+
+``` 
+	t = threading.Thread(target=self.poll_loop)
+	t.start()
+	t = threading.Thread(target=self.event_loop)
+	t.start()
+```
+
+The `Scheduler` class in scheduler.py is executed and interacted with the help of those 2 main threads. This is illustrated in the following sequence diagram.
 
 ![Scheduler Sequence Diagram](images/scheduler_sequence_diagram.png)
 
+It is helpful to begin tracing the behavior of the `Scheduler` class by following _Thread 1_. At a defined interval, the thread will fetch all the functions in `pollFunctionsList` (a.k.a `self.pfl` in the class), and push each function onto `pq`, which is the queue of tasks that need to be executed.
+
+On the other hand, _Thread 2_ handles the actual execution of each function that has been pushed in `pq`, as it continuously fetches any functions that are in `pq`. After fetching a function from it, it starts a thread for **each** function.
+
+![Scheduler Example Diagram](images/scheduler_example.png)
