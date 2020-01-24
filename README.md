@@ -40,7 +40,7 @@ To explain the behavior of the class, we must known what each thread does:
 
 It is helpful to begin understanding the behavior of `Scheduler` by following _Thread 1_. At a defined interval, the thread will fetch all the functions in `self.pollFunctionsList` (a.k.a `self.pfl` in the class), and push each function in `Pq_obj` instances onto `self.pq`, which is the queue of tasks that need to be executed. This process is repeated at a regular interval defined by `self.minPollTime`.
 
-On the other hand, _Thread 2_ handles the actual execution of each task that has been pushed in `self.pq`, as it continuously fetches any functions that are in `pq`. After fetching a function from it, it starts a thread for **each** function. However, if the number of threads exceeds the maximum number defined in `self.maxThreads`, 
+On the other hand, _Thread 2_ handles the actual execution of each task that has been pushed in `self.pq`, as it continuously fetches any functions that are in `pq`. After fetching a function from it, it starts a thread for **each** function. However, if the number of threads exceeds the maximum number defined in `self.maxThreads`, then the thread will keep checking until there are a small enough number of active threads to start a new thread.
 
 ![Scheduler Example Diagram](images/scheduler_example.png)
 
