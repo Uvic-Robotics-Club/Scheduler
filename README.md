@@ -1,17 +1,6 @@
 # Scheduler
 
-The new central software.
-
-We are ditching ROS because of many reasons including the steep learning curve, its incompatibility with Windows, and its inability to teach transferable skills to new recruits.
-
-The new scheme will be written in Python and C++, with a central Python threading mechanism.
-
-Rather than having ROS subscribers and publishers, methods will be called when data comes which put tasks into the priority queue ("published")
-
-SHELL.PY would run basically everything; it is replacing "roscore"
-It's also where the threading magic happens
-
-Most information will be held by individual tasks. Most information transfer will be carried out by tasks themselves, but we WILL want a database that logs science data, performance statistics, system monitoring, and keeping other records
+The Scheduler will schedule tasks, such as sending/receiving video data, Rover movement controls, and sensor data between the Base Station and the Rover. Some tasks may have a higher priority over other tasks and may run more often.
 
 # Explanation
 
@@ -33,7 +22,7 @@ The `Scheduler` class in scheduler.py is executed and interacted with the help o
 ![Scheduler Sequence Diagram](images/scheduler_sequence_diagram.png)
 
 To explain the behavior of the class, we must known what each thread does:
-- **Thread 1**: Used as an "input" to the scheduler. It calls the function defined by the producer, and places the list of functions to be called (all of them located in "consumer" classes) into the priority queue. **Note:**: Each function is wrapped around a `Pq_obj` (priority queue object), which becomes what we call a "task".
+- **Thread 1**: Used as an "input" to the scheduler. It calls the function defined by the producer, and places the list of functions to be called (all of them located in "consumer" classes) into the priority queue. **Note**: Each function is wrapped around a `Pq_obj` (priority queue object), which becomes what we call a "task".
 - **Thread 2**: Priority queue execution; the thread pulls tasks from the queue and creates a new thread for the task to run in. By the nature of the priority queue, when the thread pulls tasks from the queue, it gets given the ones with the highest priority first.
 - **Thread 3-X**: Each thread is associated with a task, which when the wrapped function completes, the thread completes. Each thread can be considered the "output" of the scheduler when the task completes.
 
@@ -46,12 +35,15 @@ On the other hand, _Thread 2_ handles the actual execution of each task that has
 
 # Use Cases
 
-The scheduler is expected to be used for the folllowing main use cases:
+The scheduler is expected to be used for the following main use cases:
 - Outbound communication from rover to base station 
 - Inbound communication from base station to rover
-- Communication between microcontrollers on the rover 
+- Communication between microcontrollers on the rover
 
-# Improvements
+# Reasons for Development
 
-Microcontrollers are spoken to through USB
-	Need to look into means of communication between Brain and Arduinos
+The Scheduler is the new central software that replaced ROS, which had a steep learning curve, was incompatible with Windows, and did not teach transferable skills to new recruits.
+
+The new scheme will be written in Python and C++ with the Scheduler as the central Python threading mechanism.
+
+Rather than having ROS subscribers and publishers, methods will be called when data comes, which put tasks into the priority queue. `Scheduler` will run everything and is replacing `roscore`.
