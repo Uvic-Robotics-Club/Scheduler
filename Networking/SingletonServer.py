@@ -158,7 +158,7 @@ class Station_Communication_Gate():
                     else:
                         pass
 
-"""
+
 # The main function is only written to test the class. It is not necessary to have it.
 def main():
     gate = Station_Communication_Gate()
@@ -172,4 +172,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-"""

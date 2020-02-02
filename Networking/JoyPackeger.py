@@ -8,23 +8,3 @@ class JoyPackeger():
 
         array.append("JoyData")
         return json.dumps(array)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
