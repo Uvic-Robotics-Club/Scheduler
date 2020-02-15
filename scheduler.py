@@ -47,7 +47,6 @@ class Scheduler:
 
 		self.active = False
 
-	# Start both necessary threads, then return control. Runs until a Scheduler.stop() call
 	def start(self):
 		""" Starts the instance of the Scheduler class, by starting the two necessary threads targetting
 		`poll_loop()` and `event_loop()` respectively. If any of the two threads fail to start, then exit
@@ -67,6 +66,7 @@ class Scheduler:
 		self.pollLoopThread.start()
 		if startPollLoopEvent.wait(timeout=self.POLL_THREAD_START_TIMEOUT_SEC) != True:
 			print("[ERROR]: Failed to start Poll loop thread - Exiting scheduler.")
+			# TODO: Raise Exception? May be used to handle failure case
 			return False
 		else:
 			print("[INFO]: Poll loop thread started.")
@@ -78,6 +78,7 @@ class Scheduler:
 		self.eventLoopThread.start()
 		if startEventLoopEvent.wait(timeout=self.EVENT_THREAD_START_TIMEOUT_SEC) != True:
 			print("[ERROR]: Failed to start Event loop thread - Exiting scheduler.")
+			# TODO: Raise Exception? May be used to handle failure case
 			return False
 		else:
 			print("[INFO]: Event loop thread started.")
@@ -117,8 +118,15 @@ class Scheduler:
 
 	# Loops through every polling function
 	def poll_loop(self, startPollLoopEvent):
-		"""
-		TODO: Complete method docstring
+		""" The target of the polling function thread. Blocks until the Scheduler is active, and polls 
+		each `callable` element of `pollFunctionsList`, and puts each callable's result onto the priority
+		queue. Each pushed result is of type `Pq_obj`, and is referred to as a "task".
+
+		Args:
+		- startPollLoopEvent (threading.Event): An Event instance on which `.set()` is called at the beginning
+		      of the method to indicate successful thread startup
+		Returns:
+		  None 
 		"""
 
 		startPollLoopEvent.set()
@@ -133,25 +141,26 @@ class Scheduler:
 			return
 
 		# Loop through all polling functions
-		# TODO: add a minimum time before repetitions
-		currTime = time()
-		while self.active:
-			prevTime = currTime
-			currTime = time()
-			if currTime - prevTime < self.POLL_THREAD_MINIMUM_POLL_TIME_SEC:
-				sleep(self.POLL_THREAD_MINIMUM_POLL_TIME_SEC - (currTime - prevTime))
-			for f in self.pollFunctionsList:
-				res = f()
-				if res:
-					# note: funct would be better off renamed "pq_obj" - it's not a function; it's a Pq_obj
-					for funct in res:
-						self.priorityQueue.put(funct)
+		timer = threading.Event()
+		while self.active and not timer.wait(self.POLL_THREAD_MINIMUM_POLL_TIME_SEC):
+			for function in self.pollFunctionsList:
+				result = function()
+				if result:
+					for pq_obj in result:
+						self.priorityQueue.put(pq_obj)
 
 	# TODO: add some way to kill a thread that takes too long
 	# Handles tasks from priority queue
 	def event_loop(self, startEventLoopEvent):
-		"""
-		TODO: Complete method docstring
+		""" The target of the event function thread. Blocks until the Scheduler is active, and continuously 
+		attempts to get the next task off `priorityQueue`. A thread is then started for each task, with
+		`funct_runner()` as the target.
+
+		Args:
+		- startEventLoopEvent (threading.Event): An Event instance on which `.set()` is called at the beginning
+		    of the method to indicate successful thread startup
+		Returns:
+		  None
 		"""
 
 		startEventLoopEvent.set()
@@ -162,7 +171,6 @@ class Scheduler:
 
 		while self.active:
 			if self.threadCount < self.maxThreadCount and self.priorityQueue.qsize() > 0:
-
 				# Since queue.PriorityQueue.gsize() does not guarantee that a subsequent call to get()
 				# will not block, necessary to handle the failure case.
 				try:
