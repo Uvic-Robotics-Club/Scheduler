@@ -196,8 +196,19 @@ class Scheduler:
 	# inputs: target: a function, taking 0 or one arguments
 	# args: a single argument (can be anything) or None. Not passed to function if given None
 	def funct_runner(self, target, args, startFunctionRunnerEvent):
-		"""
-		TODO: Complete method docstring
+		""" The target of each task thread, a wrapper for executing priority 
+		queue tasks. If the task, a callable object, returns a result, then 
+		place each element of the result onto a priority queue
+
+		Args:
+		- target (callable): A function to be run, i.e the task that has been popped from the
+		    priority queue
+		- args (list): The arguments that are passed to `target` when executed
+		- startFunctionRunnerEvent (threading.Event): An Event instance on which `.set()` is called at the beginning
+		    of the method to indicate successful thread startup
+		Returns:
+		  None
+
 		"""
 
 		startFunctionRunnerEvent.set()
