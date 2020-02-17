@@ -12,6 +12,7 @@ The essence of the class is that each function in `pollFunctionsList` "produces"
 
 Then, when `Scheduler.run()` is called on the scheduler instance,this creates and starts the 2 main threads. The 2 threads are created with the following lines:
 
+
 ```python
 	t = threading.Thread(target=self.poll_loop)
 	t.start()
