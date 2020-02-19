@@ -131,14 +131,16 @@ class Scheduler:
 
 		startPollLoopEvent.set()
 
-		# Loop through all polling functions
-		# TODO: Investigate and implement a more precise timing mechanism
-		# TODO: Replace sleep(self.minPollTime - (currTime -prevTime)) with timer.wait ?
 		timer = threading.Event()
-		while self.active and not timer.wait(self.POLL_THREAD_MINIMUM_POLL_TIME_SEC):
+		currTime = time() 
+		while self.active:
+			prevTime = currTime
+			if currTime - prevTime < self.POLL_THREAD_MINIMUM_POLL_TIME_SEC:
+				timer.wait(self.POLL_THREAD_MINIMUM_POLL_TIME_SEC - (currTime - prevTime))
 			for function in self.pollFunctionsList:
 				result = function()
 				self.pushQueueTasks(result)
+
 
 	# TODO: add some way to kill a thread that takes too long
 	# Handles tasks from priority queue
