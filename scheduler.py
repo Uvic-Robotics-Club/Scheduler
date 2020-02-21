@@ -156,6 +156,7 @@ class Scheduler:
 		  None
 		"""
 
+		timer = threading.Event()
 		while self.active:
 			if self.threadCount < self.maxThreadCount and self.taskQueue.qsize() > 0:
 				# Since queue.PriorityQueue.qsize() does not guarantee that a subsequent call to get()
@@ -177,7 +178,7 @@ class Scheduler:
 					#self.incrementThreadCount()
 
 			else:
-				sleep(self.EVENT_THREAD_BLOCKED_POLL_INTERVAL_SEC)
+				timer.wait(self.EVENT_THREAD_BLOCKED_POLL_INTERVAL_SEC)
 
 	# Takes a single task from the queue, runs it, and places the returned task(s) back in the queue
 	# inputs: target: a function, taking 0 or one arguments
