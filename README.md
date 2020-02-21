@@ -30,4 +30,3 @@ OUTBOUND COMMUNICATION
 
 Microcontrollers are spoken to through USB
 	Need to look into means of communication between Brain and Arduinos
-
