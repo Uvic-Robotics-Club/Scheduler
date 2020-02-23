@@ -1,4 +1,4 @@
-# joystick_demo.py
+ # joystick_demo.py
 # This program will read the x and y axis data from a USB connected joystick and
 # will convert that data into left/right speed values for the runt rover. Then it
 # will send those 2 values to the runt rover over serial in the form: 
@@ -11,8 +11,8 @@
 
 import pygame
 import serial
-from arduino_ports_init import find_COM_ports
 from time import time
+import arduino_ports_init
 
 MOTOR_DRIVE_SERIAL_PORT = '' # TODO: Update to use the correct port
 BAUD_RATE = 9600
@@ -28,15 +28,18 @@ class joystick_demo:
 
     def control_runt_rover(self):
         # detect the available ports and store them in a list
-        (MOTOR_DRIVE_SERIAL_PORT, arm_port) = find_COM_ports()
+        asf = arduino_ports_init.Arduino_serial_finder()
+        asf.scan_ports_initialize()
+        # get the serial based on the arduino's ID.
+        ser = asf.get_serial_port("Motor driver")
 
         pygame.init()
-        try:
-            ser = serial.Serial(MOTOR_DRIVE_SERIAL_PORT, BAUD_RATE)
+        # try:
+        #     ser = serial.Serial(MOTOR_DRIVE_SERIAL_PORT, BAUD_RATE)
 
-        except serial.SerialException:
-            print("Cannot find motor drive arduino.")
-            return
+        # except serial.SerialException:
+        #     print("Cannot find motor drive arduino.")
+        #     return
 
         current_time = time()
 
@@ -100,10 +103,12 @@ class joystick_demo:
         	
 def main():
 
-    try:
-        joystick_demo().control_runt_rover()
-    except:
-        print("The arduino has been disconnected")
+
+    joystick_demo().control_runt_rover()
+    # try:
+    #     joystick_demo().control_runt_rover()
+    # except:
+    #     print("The arduino has been disconnected")
 
 if __name__ == '__main__':
     main()

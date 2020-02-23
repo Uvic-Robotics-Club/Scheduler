@@ -51,6 +51,7 @@ class Arduino_serial_finder:
 
 		# printing to screen for debugging purposes. can be removed when the system has been tested to work well
 		# print(read_input)
+
 		return read_input
 
 
@@ -67,11 +68,11 @@ class Arduino_serial_finder:
 
 		for port in ports:
 
-			if ('usb') in port[0]:
+			# if ('usb') in port[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
-				Arduino_Serial = serial.Serial(port[0], 9600, timeout=0.05, write_timeout=0.05)
-				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
+				# Arduino_Serial = serial.Serial(port[0], 9600, timeout=0.05, write_timeout=0.05)
+				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
 
 
 				# arduino_id_response = ''
@@ -111,7 +112,7 @@ def main():
 	asf = Arduino_serial_finder()
 	asf.scan_ports_initialize()
 	# get the serial based on the arduino's ID.
-	connection = asf.get_serial_port('Nano')
+	connection = asf.get_serial_port("Motor driver")
 	if(connection):
 		print(connection)
 	else:
