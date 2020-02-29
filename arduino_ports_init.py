@@ -71,8 +71,8 @@ class Arduino_serial_finder:
 			# if ('usb') || (	) in port[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
-				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
-				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
+				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
+				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
 
 
 				# arduino_id_response = ''
