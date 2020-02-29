@@ -67,11 +67,14 @@ class Arduino_serial_finder:
 		ARM_SERIAL_PORT = ''
 		BAUD_RATE = 9600
 		connected_arduinos_found = 0
+		print("scanning now")
 
 		for port in ports:
-			print("check")
+				print("port found")
+				print(port)
+				print(port.device)
 
-			if ('USB') in port[0] or ('COM') in port[0]:
+			# if ('USB') in port[0] or ('COM') in port[0]:
 				print(port[0])
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
