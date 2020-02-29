@@ -32,6 +32,11 @@ class joystick_demo:
         asf.scan_ports_initialize()
         # get the serial based on the arduino's ID.
         ser = asf.get_serial_port("Motor driver")
+        if(ser):
+            print(ser)
+        else:
+            print('no connection')
+            return
 
         pygame.init()
         # try:

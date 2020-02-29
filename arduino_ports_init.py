@@ -19,7 +19,7 @@ class Arduino_serial_finder:
 	# if registered
 	def get_serial_port(self, arduino_id):
 		for port in self.COM_ports:
-			print(port)
+			# print(port)
 			if arduino_id in port:
 				return self.COM_ports[port]
 		return None
@@ -68,11 +68,11 @@ class Arduino_serial_finder:
 
 		for port in ports:
 
-			# if ('usb') in port[0]:
+			# if ('usb') || (	) in port[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
-				# Arduino_Serial = serial.Serial(port[0], 9600, timeout=0.05, write_timeout=0.05)
-				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
+				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
+				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
 
 
 				# arduino_id_response = ''
