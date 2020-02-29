@@ -73,7 +73,7 @@ class Arduino_serial_finder:
 			print("port found")
 			print(port.device)
 
-			if ('dev') in port.device or ('COM') in port.device:
+			if ('USB') in port.device or ('COM') in port.device:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
 				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
@@ -117,12 +117,16 @@ def main():
 	asf = Arduino_serial_finder()
 	asf.scan_ports_initialize()
 	# get the serial based on the arduino's ID.
+	print("1")
 	connection = asf.get_serial_port("Motor driver")
+	print("2")
 	if(connection):
 		print(connection)
 	else:
 		print('no connection')
+	print("3")
 	return
+	print("4")
 
 
 
