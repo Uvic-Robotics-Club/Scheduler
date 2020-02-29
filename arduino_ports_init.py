@@ -18,6 +18,7 @@ class Arduino_serial_finder:
 	# This is to identify the arduino based on its 'ID' and returns its serial information
 	# if registered
 	def get_serial_port(self, arduino_id):
+		print("check")
 		for port in self.COM_ports:
 			# print(port)
 			if arduino_id in port:
@@ -26,6 +27,7 @@ class Arduino_serial_finder:
 
 
 	def read_from_serial(self, ser, BAUD_RATE):
+		print("check")
 		# the messages sent and received are contained in brackets
 		PACKET_START_MARKER = '>'
 		PACKET_END_MARKER = '<'
@@ -67,8 +69,9 @@ class Arduino_serial_finder:
 		connected_arduinos_found = 0
 
 		for port in ports:
+			print("check")
 
-			# if ('usb') || (	) in port[0]:
+			if ('usb') || () in port[0]:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
 				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
