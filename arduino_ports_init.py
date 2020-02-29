@@ -52,7 +52,7 @@ class Arduino_serial_finder:
 						break;
 
 		# printing to screen for debugging purposes. can be removed when the system has been tested to work well
-		# print(read_input)
+		print(read_input)
 
 		return read_input
 
@@ -70,12 +70,10 @@ class Arduino_serial_finder:
 		print("scanning now")
 
 		for port in ports:
-				print("port found")
-				print(port)
-				print(port.device)
+			print("port found")
+			print(port.device)
 
-			# if ('USB') in port[0] or ('COM') in port[0]:
-				print(port[0])
+			if ('dev') in port.device or ('COM') in port.device:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
 				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
@@ -124,6 +122,7 @@ def main():
 		print(connection)
 	else:
 		print('no connection')
+	return
 
 
 
