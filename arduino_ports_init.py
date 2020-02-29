@@ -101,7 +101,7 @@ class Arduino_serial_finder:
 						print("Robot arm is connected!")
 
 				else:
-					print(f"unsuccessful connection with {port_COM}")
+					print("unsuccessful connection with" + port_COM)
 
 				self.COM_ports[arduino_id_response] = Arduino_Serial
 
