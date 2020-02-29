@@ -71,7 +71,8 @@ class Arduino_serial_finder:
 		for port in ports:
 			print("check")
 
-			if ('usb') in port[0] or ('COM') in port[0]:
+			if ('USB') in port[0] or ('COM') in port[0]:
+				print(port[0])
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
 				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
