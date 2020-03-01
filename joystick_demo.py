@@ -36,11 +36,10 @@ class joystick_demo:
             print(ser)
         else:
             print('no connection')
-            return
 
         pygame.init()
         # try:
-        #     ser = serial.Serial(MOTOR_DRIVE_SERIAL_PORT, BAUD_RATE)
+        #     ser = serial.Serial('COM8', BAUD_RATE)
 
         # except serial.SerialException:
         #     print("Cannot find motor drive arduino.")
@@ -101,7 +100,7 @@ class joystick_demo:
 
             # :<{PACKAGE_SIZE} will make sure packet has a length of PACKAGE_SIZE
             # packet = f'{(">" + str(speedLeft) + "," + str(speedRight) + "<"):<{PACKAGE_SIZE}}'
-            packet = ">" + str(speedLeft) + "," + str(speedRight) + "<"
+            packet = ">M" + str(speedLeft) + "," + str(speedRight) + "<"
             print(packet)
             ser.write(packet.encode())
 

@@ -1,5 +1,6 @@
 import serial.tools.list_ports
 import serial
+import time
 
 
 ports = list(serial.tools.list_ports.comports())
@@ -18,16 +19,16 @@ class Arduino_serial_finder:
 	# This is to identify the arduino based on its 'ID' and returns its serial information
 	# if registered
 	def get_serial_port(self, arduino_id):
-		print("check")
 		for port in self.COM_ports:
-			# print(port)
+
 			if arduino_id in port:
 				return self.COM_ports[port]
 		return None
 
 
-	def read_from_serial(self, ser, BAUD_RATE):
-		print("check")
+
+	def read_from_serial(self, Arduino_Serial, BAUD_RATE):
+		print("Reading...")
 		# the messages sent and received are contained in brackets
 		PACKET_START_MARKER = '>'
 		PACKET_END_MARKER = '<'
@@ -35,14 +36,16 @@ class Arduino_serial_finder:
 		# signal read is stored in the variabe read_input
 		read_input = ''
 		reading_in_progress = True
-
+		
 		while reading_in_progress:
+			print("num of bytes = " + str(Arduino_Serial.in_waiting))
 
 			# read from serial
-			tmp_char = ser.read().decode('utf-8')
+			tmp_char = Arduino_Serial.read().decode('utf-8')
 			if(tmp_char == PACKET_START_MARKER):
-				while True:
-					tmp_char = ser.read().decode('utf-8')
+				while Arduino_Serial.in_waiting:
+					print("num of bytes = " + str(Arduino_Serial.in_waiting))
+					tmp_char = Arduino_Serial.read().decode('utf-8')
 
 					# is closing marker is read, the message is over; otherwise keep reading
 					if tmp_char != PACKET_END_MARKER:
@@ -51,9 +54,12 @@ class Arduino_serial_finder:
 						reading_in_progress = False
 						break;
 
-		# printing to screen for debugging purposes. can be removed when the system has been tested to work well
-		print(read_input)
+		# while Arduino_Serial.in_waiting:
+		# 	print(Arduino_Serial.read().decode('utf-8') + '---- ' + str(Arduino_Serial.in_waiting), end= '')
 
+
+		# printing to screen for debugging purposes. can be removed when the system has been tested to work well
+		print("Done reading. Input = " + read_input)
 		return read_input
 
 
@@ -70,26 +76,26 @@ class Arduino_serial_finder:
 		print("scanning now")
 
 		for port in ports:
-			print("port found")
-			print(port.device)
+			print("port found: " + port.device)
 
 			if ('USB') in port.device or ('COM') in port.device:
 				# opens the serial connection with the port, specifying baudrate & using read and write  
 				# timeout of less than 1/10th of a second.
 				# Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout=0.05, write_timeout=0.05)
-				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 1)
+				Arduino_Serial = serial.Serial(port.device, BAUD_RATE, timeout = 3)
 
 
-				# arduino_id_response = ''
-				# # if the read times-out, we try again until we get its response.
-				# while(not arduino_id_response):
-				# 	Arduino_Serial.write(b'id')
-				# 	arduino_id_response = str(Arduino_Serial.read(5), encoding='ascii')
-				# a simple message to the arduino signalling a response has been received
-				Arduino_Serial.write('id'.encode())
+				# delay has to be put because the arduino takes almost 1.7 seconds to be ready for receiving from Serial :(
+				time.sleep(1.8)
+				Arduino_Serial.write('>ID<'.encode())
 
-				# while loop to make sure the arduino has received the message by received a "done!" string
+				# wait till we receive a response
+				while not Arduino_Serial.in_waiting:
+					None
+
+				# start reading what we received from Serial
 				arduino_id_response = self.read_from_serial(Arduino_Serial, BAUD_RATE)
+
 
 				# if read from serial did not timeout:
 				if(len(arduino_id_response) > 0):
@@ -106,7 +112,7 @@ class Arduino_serial_finder:
 						print("Robot arm is connected!")
 
 				else:
-					print("unsuccessful connection with" + port_COM)
+					print("unsuccessful connection with " + port.device)
 
 				self.COM_ports[arduino_id_response] = Arduino_Serial
 
@@ -117,16 +123,12 @@ def main():
 	asf = Arduino_serial_finder()
 	asf.scan_ports_initialize()
 	# get the serial based on the arduino's ID.
-	print("1")
 	connection = asf.get_serial_port("Motor driver")
-	print("2")
+
 	if(connection):
 		print(connection)
 	else:
 		print('no connection')
-	print("3")
-	return
-	print("4")
 
 
 
