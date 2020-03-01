@@ -165,7 +165,6 @@ void parse_packet()
     case 'I':
     
       Serial.write(">Motor driver<");
-      blink(pin, 500);
       break;
 
     case 'M':
