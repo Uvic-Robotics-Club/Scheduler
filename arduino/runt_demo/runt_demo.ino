@@ -33,9 +33,10 @@ const int BAUD_RATE = 9600; // TODO: Set up baud rate to work with Pi
 
 const int SPEED_MAX = 100;
 const int SPEED_MIN = -100;
-const char PACKET_START_MARKER = '>';
-const char PACKET_SEPARATOR[2] = ",";
-const char PACKET_END_MARKER = '<';
+const char PACKET_START_MARKER = '<';
+const char PACKET_SEPARATOR[2] = "|";
+const char PACKET_END_MARKER = '>';
+const char SPEED_PACKET_SEPARATOR[2] = ",";
 
 int8_t speed_left;
 int8_t speed_right;
@@ -157,18 +158,31 @@ void parse_packet()
   char temp_chars[SERIAL_BUFFER_SIZE];
   int speed_values[2];
   int i;
+  char mode;
 
+//  copy serial buffer over to a new string
   strncpy(temp_chars, serial_buffer, SERIAL_BUFFER_SIZE);
+//  split the packet(temp_chars) into 2 segments by the delimiter '|'
   strtok_ptr = strtok(temp_chars, PACKET_SEPARATOR);
+//  copy over the first segment, which contains the mode, into a variable
+  mode = *strtok_ptr;
+//  point to the second segment containing the data of the packet
+  strtok_ptr = strtok(NULL, PACKET_SEPARATOR);
 
-  switch(serial_buffer[0]){
+//  switch case to go through the modes
+  switch(mode){
+
+//  this case asks for ID
     case 'I':
     
       Serial.write(">Motor driver<");
       break;
 
-    case 'M':
-    
+//    data contains the motor speeds. data packet is "(left Speed),(right Speed)"
+    case 'S':
+
+//      split the speed data into segments using the delimiter ','
+      strtok_ptr = strtok(strtok_ptr, SPEED_PACKET_SEPARATOR);
       for (i = 0; i < 2; i++)
       {
           speed_values[i] = atoi(strtok_ptr);
@@ -177,7 +191,7 @@ void parse_packet()
             // Receieved speed is not in range. Ignore this packet.
             return;
           }
-          strtok_ptr = strtok(NULL, PACKET_SEPARATOR);
+          strtok_ptr = strtok(NULL, SPEED_PACKET_SEPARATOR);
       }
       speed_left_setpoint = speed_values[LEFT_SPEED_INDEX];
       speed_right_setpoint = speed_values[RIGHT_SPEED_INDEX];

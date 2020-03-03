@@ -14,7 +14,6 @@ import serial
 from time import time
 import arduino_ports_init
 
-MOTOR_DRIVE_SERIAL_PORT = '' # TODO: Update to use the correct port
 BAUD_RATE = 9600
 PACKAGE_SIZE = 9
 
@@ -27,15 +26,19 @@ SLIDER_OFFSET = 1 * MAX_VAL # Slider in front of joystick
 class joystick_demo:
 
     def control_runt_rover(self):
-        # detect the available ports and store them in a list
+
+        # detect the available ports and store them in a dictionary
         asf = arduino_ports_init.Arduino_serial_finder()
         asf.scan_ports_initialize()
         # get the serial based on the arduino's ID.
         ser = asf.get_serial_port("Motor driver")
+        
+        # 
         if(ser):
             print(ser)
         else:
-            print('no connection')
+            print('UDrive arduino not connected')
+            return
 
         pygame.init()
         # try:
@@ -100,7 +103,7 @@ class joystick_demo:
 
             # :<{PACKAGE_SIZE} will make sure packet has a length of PACKAGE_SIZE
             # packet = f'{(">" + str(speedLeft) + "," + str(speedRight) + "<"):<{PACKAGE_SIZE}}'
-            packet = ">M" + str(speedLeft) + "," + str(speedRight) + "<"
+            packet = "<S|" + str(speedLeft) + "," + str(speedRight) + ">"
             print(packet)
             ser.write(packet.encode())
 

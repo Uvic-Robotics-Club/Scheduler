@@ -38,13 +38,12 @@ class Arduino_serial_finder:
 		reading_in_progress = True
 		
 		while reading_in_progress:
-			print("num of bytes = " + str(Arduino_Serial.in_waiting))
+			print("num of bytes = " + str(Arduino_Serial.in_waiting) + "  " +read_input)
 
 			# read from serial
 			tmp_char = Arduino_Serial.read().decode('utf-8')
 			if(tmp_char == PACKET_START_MARKER):
 				while Arduino_Serial.in_waiting:
-					print("num of bytes = " + str(Arduino_Serial.in_waiting))
 					tmp_char = Arduino_Serial.read().decode('utf-8')
 
 					# is closing marker is read, the message is over; otherwise keep reading
@@ -88,6 +87,12 @@ class Arduino_serial_finder:
 				# delay has to be put because the arduino takes almost 1.7 seconds to be ready for receiving from Serial :(
 				time.sleep(1.8)
 				Arduino_Serial.write('>ID<'.encode())
+				# while True:
+
+				# 	Arduino_Serial.write('>ID<'.encode())
+				# 	time.sleep(2)
+				# 	Arduino_Serial.write('>Mqw<'.encode())
+				# 	time.sleep(2)
 
 				# wait till we receive a response
 				while not Arduino_Serial.in_waiting:
