@@ -11,8 +11,17 @@ import errno  # this is used for handling specific errors for the socket module
 #   should be commented out.
 # todo: The main function is only written to test the class. It is not necessary to have it.
 
+class Connection:
+    def __init__(self, server_socket_object, server_ip, port, client_socket_object, client_address):
+        self.server_socket_object = server_socket_object
+        self.server_ip = server_ip
+        self.port = port
+        self.client_socket_object = client_socket_object
+        self.client_address = client_address
+
 
 class Station_Communication_Gate():
+
     classConnectionList = [None, None, None, None, None]
     #  classConnectionList --> [server socket Object , ip (of server itself), port , client connected to the server ,
     # ... address of client connected to the server ]
