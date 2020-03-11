@@ -38,6 +38,7 @@ class Scheduler:
 			if callable(function) == False: 
 				return
 
+		self.activeThreads = []
 		self.threadCount = 0
 		self.threadCountLock = threading.Lock()
 		self.pollFunctionsList = pollFunctionsList
@@ -82,6 +83,10 @@ class Scheduler:
 		self.eventLoopThread = threading.Thread(target=self.event_loop, args=(startEventLoopEvent,))
 		self.eventLoopThread.start()
 		print("[INFO]: Event loop thread started.")
+
+		# Starts the watchdog loop to monitor and kill threads
+		self.watchdogLoopThread = threading.Thread(target=self.watchdog_loop)
+		self.watchdogLoopThread.start()
 
 	def stop(self):
 		""" Stops the instance of the Scheduler class in such a way that it can be restarted with a subsequent
@@ -168,17 +173,19 @@ class Scheduler:
 					continue
 
 				startFunctionRunnerEvent = threading.Event()
+				
+				
+				
 				t = threading.Thread(target=self.funct_runner, args=[obj.func, obj.args, startFunctionRunnerEvent])
 				t.start()
-				if startFunctionRunnerEvent.wait(timeout=self.FUNCT_RUNNER_THREAD_START_TIMEOUT_SEC) != True:
-					print("[ERROR]: Failed to start Function Runner thread for a task. Ignoring task.")
-				else:
-					pass
-				    # TODO: Keep track of active threads. This will allow us to detect threads that are blocking and taking too long.
-					#self.incrementThreadCount()
+				self.activeThreads.append([t, time()])
+				self.incrementThreadCount()
 
 			else:
 				timer.wait(self.EVENT_THREAD_BLOCKED_POLL_INTERVAL_SEC)
+
+	def watchdog_loop(self):
+		pass
 
 	# Takes a single task from the queue, runs it, and places the returned task(s) back in the queue
 	# inputs: target: a function, taking 0 or one arguments
@@ -199,16 +206,15 @@ class Scheduler:
 
 		"""
 
-		# TODO: Move to end of function, where indicating success
-		startFunctionRunnerEvent.set()
-
-		result = None
 		if args:
 			result = target(args)
 		else:
 			result = target()
 
 		self.pushQueueTasks(result)
+
+		# TODO: Move to end of function, where indicating success
+		startFunctionRunnerEvent.set()
 
 	def pushQueueTasks(self, taskList):
 		
