@@ -1,7 +1,10 @@
 import threading
 import queue
+from enum import Enum
 from time import sleep, time
+from taskpriority import TaskPriority
 from scheduler_types import *
+from workerthreadmanager import WorkerThreadManager
 
 class Scheduler:
 	# Defined constants for the operation of the `poll_loop()` target thread
@@ -83,10 +86,6 @@ class Scheduler:
 		self.eventLoopThread = threading.Thread(target=self.event_loop, args=(startEventLoopEvent,))
 		self.eventLoopThread.start()
 		print("[INFO]: Event loop thread started.")
-
-		# Starts the watchdog loop to monitor and kill threads
-		self.watchdogLoopThread = threading.Thread(target=self.watchdog_loop)
-		self.watchdogLoopThread.start()
 
 	def stop(self):
 		""" Stops the instance of the Scheduler class in such a way that it can be restarted with a subsequent
@@ -175,7 +174,6 @@ class Scheduler:
 				startFunctionRunnerEvent = threading.Event()
 				
 				
-				
 				t = threading.Thread(target=self.funct_runner, args=[obj.func, obj.args, startFunctionRunnerEvent])
 				t.start()
 				self.activeThreads.append([t, time()])
@@ -183,9 +181,6 @@ class Scheduler:
 
 			else:
 				timer.wait(self.EVENT_THREAD_BLOCKED_POLL_INTERVAL_SEC)
-
-	def watchdog_loop(self):
-		pass
 
 	# Takes a single task from the queue, runs it, and places the returned task(s) back in the queue
 	# inputs: target: a function, taking 0 or one arguments
@@ -264,6 +259,7 @@ class Scheduler:
 		return True
 
 
+
 # -------------------------------------------------------------------------------------------
 # Below this line is NOT part of Scheduler's implementation
 
@@ -279,7 +275,7 @@ class Demo_obj:
 		if time() - self.time > self.val:
 			self.time = time()
 			#3 is the priority of this event
-			return [Pq_obj(3, self.event_function)]
+			return [Pq_obj(3 self.event_function)]
 
 	# Checks that functions can be returned by polled functions
 	def event_function(self):
@@ -291,6 +287,8 @@ class Demo_obj:
 	# checks that functions can be returned by functions in queue
 	def do_later_function(self, num):
 		print("This ran a bit later from event function " + str(num - 1))
+
+
 
 
 # A demo for how to use.
