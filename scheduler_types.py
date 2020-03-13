@@ -12,6 +12,14 @@ class Pq_obj:
 	def __lt__(self, other):
 		return self.priority < other.priority
 
+class Task:
+	def __init__(self, priority, func, args=None):
+		self.func = func
+		self.args = args
+		self.priority = priority
+
+	def __lt__(self, other):
+		return self.priority.value < other.priority.value
 
 # A simple data type containing x, y, and z values
 # Also has a handy print method!

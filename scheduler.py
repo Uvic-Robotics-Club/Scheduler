@@ -274,8 +274,7 @@ class Demo_obj:
 	def poll_function(self):
 		if time() - self.time > self.val:
 			self.time = time()
-			#3 is the priority of this event
-			return [Pq_obj(3 self.event_function)]
+			return [Pq_obj(3, self.event_function)]     
 
 	# Checks that functions can be returned by polled functions
 	def event_function(self):

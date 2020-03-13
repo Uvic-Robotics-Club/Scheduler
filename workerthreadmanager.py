@@ -1,5 +1,5 @@
 import queue
-from scheduler_types import *
+from scheduler_types import Task
 from taskpriority import TaskPriority
 import threading
 
@@ -25,67 +25,58 @@ class WorkerThreadManager():
             TaskPriority.LOW: queue.Queue()
         }
 
-        self.priorityQ
-
-
+        self.priorityQueue = priorityQueue
 
     def pushTask(self, task):
-        if type(task) != Pq_obj:
+        if type(task) != Task:
             return 
 
-        for priority in self.taskQueues.keys():
-            if task.priority[0] == priority.value:
-                self.taskQueues[priority].put(task)
+        self.taskQueues[task.priority].put(task)
 
     def routing_loop(self):
         while self.active == True:
-            for priority in self.taskQueues:
-                try:
-                    pendingTask = self.taskQueues[priority].get(block=False)
-                except queue.Empty:
+            for taskQueuePriority in self.taskQueues:
+                if self.taskQueues[taskQueuePriority].empty():
                     continue
 
-                # For a given priority, e.g TaskPriority.MEDIUM, must
-                # check if any available space in both lists for 
-                # TaskPriority.HIGH and TaskPriority.MEDIUM
-                for threadPriority in self.activeTaskThreads:
-                    if pendingTask.priority[0] > threadPriority.value and len(self.activeTaskThreads[threadPriority]) < self.MAX_TASK_THREADS[threadPriority]:
-                        t = threading.Thread(target=self.taskWorker, args=[obj.func, obj.args, startFunctionRunnerEvent])
-                        t.start()
-                        self.activeTaskThreads[threadPriority].append(t)
-                        break
+                for taskThreadPriority in [priority for priority in self.activeTaskThreads.keys()]:
+
+                #for threadPriority in self.activeTaskThreads:
+                #    if pendingTask.priority[0] > threadPriority.value and len(self.activeTaskThreads[threadPriority]) < self.MAX_TASK_THREADS[threadPriority]:
+                #        t = threading.Thread(target=self.taskWorker, args=[pendingTask.func, pendingTask.args])
+                #        t.start()
+                #        self.activeTaskThreads[threadPriority].append(t)
+                #        break
+
+                pendingTask = self.taskQueues[priority].get(block=False)
 
     def watchdog_loop(self):
         pass
 
     def taskWorker(self, target, args):
-		if args:
-			result = target(args)
-		else:
-			result = target()
+        if args:
+            result = target(args)
+        else:
+            result = target()
 
-        self.pushQueueTa
-
- 	def pushQueueTasks(self, taskList):
-		if taskList == None:
-			return True
-		elif type(taskList) == list:
-			for task in taskList:
-				if type(task) == Pq_obj:
-					self.taskQueue.put(task)
-				else:
-					print("[ERROR]: Failed to add object, wrong type!")
-					return False
-		elif type(taskList) == Pq_obj:
-			self.taskQueue.put(taskList)
-		else:
-			print("[ERROR]: Failed to add task, wrong type!")
-			return False
-
-		return True           
-
-
-
+        self.pushQueueTasks(result)
+        
+    def pushQueueTasks(self, taskList):
+        if taskList == None:
+            return True
+        elif type(taskList) == list:
+            for task in taskList:
+                if type(task) == Task:
+                    self.priorityQueue.put(task)
+                else:
+                    print("[ERROR]: Failed to add object, wrong type!")
+                    return False
+        elif type(taskList) == Task:
+            self.priorityQueue.put(taskList)
+        else:
+            print("[ERROR]: Failed to add task, wrong type!")
+            return False
+        return True           
 
 if __name__ == "__main__":
-    m = WorkerThreadManager()
+    m = WorkerThreadManager(queue.PriorityQueue())
