@@ -25,7 +25,7 @@ class Rover_Communication_Gate:
     connection = None
 
     sending_queue = queue.Queue()  # a queue that contains all the data that needs to be sent to the station
-    # ... since this is a complex object, it is shared among all instances of the class
+    # ~ since this is a complex object, it is shared among all instances of the class
 
     UDP_BROADCAST_PORT = 9999
     UDP_RECEIVE_PORT = 2048
@@ -46,7 +46,7 @@ class Rover_Communication_Gate:
             
             """
             Rover_Communication_Gate.connection = Connection(port=self.INITIAL_PORT)
-            t = Thread(target=self.main_thread) # connection will be established in the thread
+            t = Thread(target=self.main_thread)  # connection will be established in the thread
             t.start()
 
         else:
@@ -113,7 +113,7 @@ class Rover_Communication_Gate:
                 # Client objects are one-time-use in python. Thus, we create a new one
                 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-            except ConnectionResetError:  # raise when there is no server
+            except ConnectionResetError:  # raised when there is no server
                 tcp_connected = False  
                 print("(reset) Server not listening...")
                 sleep(1)
@@ -122,10 +122,8 @@ class Rover_Communication_Gate:
 
         self.connection.client_socket_object = client
         
-        """
-        Setting a time out for the thread so it doesn't spend time on the task for more than 0.5 seconds; if it doesn't receive
-        anything for 0.5 seconds, it starts sending items from priority queue
-        """
+
+        # Setting a time out so if client  doesn't receive anything for 0.5 seconds, it starts sending items from priority queue
         self.connection.client_socket_object.settimeout(0.5)
 
         return client  # returning client, which is a socket object (TODO: is this really necessary?)
@@ -156,7 +154,6 @@ class Rover_Communication_Gate:
                     print(item)  # TODO: this print statement must be changed to a function call to merge with the shell
                     # TODO: (only for UVic Robotics use)
 
-
             except socket.timeout:  # catching the timeout error
                 print("timeout error while waiting to receive from server")
 
@@ -170,9 +167,10 @@ class Rover_Communication_Gate:
                 if self.sending_queue.empty():
                     break
                 else:
+                    # we temporarily store the msg which is about to be sent so it's not lost if sending fails
                     current_msg_to_send = self.sending_queue.get()
+
                     try:
-                        # we temporarily store the msg which is about to be sent so it's not lost if sending fails
                         self.connection.client_socket_object.send(bytes(current_msg_to_send, encoding='utf-8'))
                         
                     except socket.error: 
