@@ -1,3 +1,4 @@
+from enum import Enum
 from time import time
 
 # Comparable object for storing a function and its arguments in the priority queue
@@ -20,6 +21,21 @@ class Task:
 
 	def __lt__(self, other):
 		return self.priority < other.priority
+
+class TaskPriority(Enum):
+    HIGH = 1
+    MEDIUM_HIGH = 2
+    MEDIUM = 3
+    MEDIUM_LOW = 4
+    LOW = 5
+    EXTENDED = 6
+
+    #TODO: Document the method
+    def __lt__(self, other):
+        return self.value > other.value
+
+    def __le__(self, other):
+        return self.value >= other.value
 
 # A simple data type containing x, y, and z values
 # Also has a handy print method!

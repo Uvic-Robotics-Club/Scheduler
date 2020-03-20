@@ -1,6 +1,5 @@
 import queue
-from scheduler_types import Task
-from taskpriority import TaskPriority
+from scheduler_types import Task, TaskPriority
 from time import time, sleep
 import threading
 
@@ -23,9 +22,15 @@ class Scheduler():
     }
 
     def __init__(self, pollFunctionsList):
+        if type(pollFunctionsList) != list:
+            raise Exception("pollFunctionsList must be a list type.")
+        
+        if len(pollFunctionsList) == 0:
+            raise Exception("Cannot run Scheduler with an empty pollFunctionsList.")
+
         for function in pollFunctionsList:
             if callable(function) == False:
-                return # TODO: Throw exception
+                raise Exception("The following element in pollFunctionsList is not callable: "+str(function))
 
         self.pollFunctionsList = pollFunctionsList
         self.taskQueues = dict([(priority, queue.Queue()) for priority in self.TASK_THREADS_SETTINGS.keys()])
