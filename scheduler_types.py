@@ -17,10 +17,9 @@ class Task:
 		self.func = func
 		self.args = args
 		self.priority = priority
-		self.priorityComparison = (priority.value, time())
 
 	def __lt__(self, other):
-		return self.priorityComparison < other.priorityComparison
+		return self.priority < other.priority
 
 # A simple data type containing x, y, and z values
 # Also has a handy print method!
