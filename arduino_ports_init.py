@@ -87,13 +87,7 @@ class Arduino_serial_finder:
 				# delay has to be put because the arduino takes almost 1.7 seconds to be ready for receiving from Serial :(
 				time.sleep(1.8)
 				Arduino_Serial.write('>ID<'.encode())
-				# while True:
-
-				# 	Arduino_Serial.write('>ID<'.encode())
-				# 	time.sleep(2)
-				# 	Arduino_Serial.write('>Mqw<'.encode())
-				# 	time.sleep(2)
-
+	
 				# wait till we receive a response
 				while not Arduino_Serial.in_waiting:
 					None
@@ -123,7 +117,7 @@ class Arduino_serial_finder:
 
 
 
-
+# main only for debugging
 def main():
 	asf = Arduino_serial_finder()
 	asf.scan_ports_initialize()

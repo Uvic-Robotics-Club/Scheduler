@@ -4,7 +4,18 @@
 # will send those 2 values to the runt rover over serial in the form: 
 #
 # <start marker><left speed integer><seperator><right speed integer><end marker>
-#
+# ###########################
+# The joystick.get_axis(0) axis is different on linux between windows. 
+# The z_axis and limiter is switched around. Use the following code when switching between operating systems
+# 
+# windows:
+# z_axis = joystick.get_axis(3)* MAX_VAL
+# limiter = (0 - joystick.get_axis(2)) * MAX_VAL
+# 
+# Linux:
+# z_axis = joystick.get_axis(2)* MAX_VAL
+# limiter = (0 - joystick.get_axis(3)) * MAX_VAL
+# ###########################
 # The left and right speeds are values [-100, 100] where a negative value
 # specifies the reverse direction. The start marker is the '>' character. The
 # seperator is a comma. The end marker is the '<' character.
@@ -33,7 +44,7 @@ class joystick_demo:
         # get the serial based on the arduino's ID.
         ser = asf.get_serial_port("Motor driver")
         
-        # 
+        
         if(ser):
             print(ser)
         else:
@@ -41,12 +52,6 @@ class joystick_demo:
             return
 
         pygame.init()
-        # try:
-        #     ser = serial.Serial('COM8', BAUD_RATE)
-
-        # except serial.SerialException:
-        #     print("Cannot find motor drive arduino.")
-        #     return
 
         current_time = time()
 
@@ -67,10 +72,12 @@ class joystick_demo:
             # X and Y axis is range [-100.0, 100.0] where negative is reverse
             pygame.event.get()
             x_axis = joystick.get_axis(0) * MAX_VAL
-            y_axis = (0 - joystick.get_axis(1)) * MAX_VAL
+            y_axis = (0-joystick.get_axis(1))* MAX_VAL
 
             # Rotation around Z axis is range [-100.0, 100.0] where negative is left rotation
-            z_axis = joystick.get_axis(3) * MAX_VAL
+            z_axis = joystick.get_axis(3)* MAX_VAL
+            # print(x_axis, y_axis, z_axis)
+
             
             # Limiter is in range [0, 10.0] where 0 is when slider is all the way
             # back towards negative sign
@@ -101,8 +108,7 @@ class joystick_demo:
             speedLeft = int(speedLeft)
             speedRight = int(speedRight)
 
-            # :<{PACKAGE_SIZE} will make sure packet has a length of PACKAGE_SIZE
-            # packet = f'{(">" + str(speedLeft) + "," + str(speedRight) + "<"):<{PACKAGE_SIZE}}'
+            # create a data packet with 'S' and send it over to serial
             packet = "<S|" + str(speedLeft) + "," + str(speedRight) + ">"
             print(packet)
             ser.write(packet.encode())
