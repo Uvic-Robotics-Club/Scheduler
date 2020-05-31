@@ -7,14 +7,13 @@ Grab the webcam data in pieces that can be transmitted over the network
 
 ```
 python version 3.8.1
-opencv version 4.1.2.30
+opencv version 4.2.0.34
 ```
 
 ## Installing 
 ```
-pip3 install opencv-python==4.1.2.30
+pip3 install opencv-python
 ```
-This is the not the latest version of opencv, as the latest one somehow crashes when using the VideoFeed file.
 
 ## Documentation 
 
