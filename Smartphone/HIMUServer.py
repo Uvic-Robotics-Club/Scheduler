@@ -29,6 +29,7 @@ import socket
 import math
 import traceback
 import time
+import sensordata as s
 import json
 
 valuesPerSensor = 3
@@ -42,7 +43,7 @@ class HIMUServer:
 		self.timeout = timeout  #timeout in seconds
 		self.bufferSize=bufferSize #bytes
 		self.go = True		
-		if(separatorIndex == 0):
+		if(separatorIndex == 0  ):
 			self.packSeparator = self.__packSeparators[0]
 		else:
 			self.packSeparator = self.__packSeparators[separatorIndex]
@@ -53,6 +54,36 @@ class HIMUServer:
 	def __notifyListeners(self, recPacket):
 		for listener in self.__listeners:
 			listener.notify(recPacket)
+
+	def executeRAW(self , port):
+		'''
+		Print raw data received (UDP)
+		'''
+		UDPSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)	
+		UDPSocket.settimeout(timeout)
+		serverAddress = ('', port)
+		print('Listening on port ' + str(port))
+		UDPSocket.bind(serverAddress)
+		while self.go:
+			[data,attr] = UDPSocket.recvfrom(self.bufferSize)
+			if not data: break
+			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
+		UDPSocket.close()
+
+	def executeUDP(self , port):
+		'''
+		Performs data acquisition via UDP protocol
+		'''
+		UDPSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)	
+		UDPSocket.settimeout(self.timeout)
+		serverAddress = ('', port)
+		print('Listening on port ' + str(port))
+		UDPSocket.bind(serverAddress)
+		while self.go:
+			[data,attr] = UDPSocket.recvfrom(self.bufferSize)
+			if not data: break
+			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
+		UDPSocket.close()
 
 	def executeTCP(self , port):
 		'''
@@ -71,28 +102,26 @@ class HIMUServer:
 			data = connection.recv(self.bufferSize)
 			if not data: break
 			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
-		connection.close()
+		connection.close()		
 
-
-	def executeUDP(self , port):
+	def executeFile(self , fileName):
 		'''
-		Performs data acquisition via UDP protocol
+		Performs data acquisition from local file
 		'''
-		UDPSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)	
-		UDPSocket.settimeout(self.timeout)
-		serverAddress = ('', port)
-		print('Listening on port ' + str(port))
-		UDPSocket.bind(serverAddress)
-		while self.go:
-			[data,attr] = UDPSocket.recvfrom(self.bufferSize)
-			if not data: break
-			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
-		UDPSocket.close()
+		print("Reading file " + fileName + " ...")
+		f = open(fileName,'r')
+		sline=f.readline()
+		while sline!='':
+			if sline[0]!= self.__commentSymbol:			
+				self.__notifyListeners(self.__extractSensorData(sline))
+			sline=f.readline()
+		print('reached EOF.')
 			
+	
 	@staticmethod
 	def strings2Floats(listString):
 		'''
-		Converts a list of Strings to a list of floats; returns the converted list 
+		Converts a list of Strings to a list of floats; returns the converted list
 		'''
 		out=[]		
 		for j in range(0, len(listString)):
@@ -103,96 +132,28 @@ class HIMUServer:
 	@staticmethod
 	def printSensorsData (sensorData):		
 		'''
-		Prints to console the acquired sensors'data 
+		Prints to console the acquired sensors'data
 		'''
-		sensor_name= " "
-		key = " "
-		val = " "
 		sensor_dict = {}
-		value_dict = {}
-		gps_dict = {}
-		accl_dict = {}
-		gyro_dict = {}
-		grav_dict = {}
-		linaccel_dict = {}
-		vect_dict = {}
-		magnet_dict = {}
-		baro_dict = {}
-
 		try:	
 			for acquisition in sensorData:
-				i = 1;
+				value_dict = {}
+				i = 1
 				for sensorAcq in acquisition :
-					sensor_num = 'Sensor' + str(i)
-					for index in range(len(sensorAcq)):
-						if(i!=7):
-							sensor_dict = HIMUServer.sensor_key(i,sensorAcq[index],sensor_dict,value_dict,index,accl_dict,gyro_dict,grav_dict,vect_dict,magnet_dict,linaccel_dict,baro_dict) #do not change this to value_dict unless a result to fix that has arise. Or else face awkward ass wrath
-						else:
-							if(index == 0):
-								key = "Lat."
-							elif(index == 1):
-								key = "Lon."
-							elif(index == 2):
-								key = "Alt."
-							gps_dict[key] = float(sensorAcq[index])
-							sensor_dict["GPS"] = gps_dict
+					# print('Sensor' + str(i) +  ": " + str(sensorAcq))
+					something = s.sensordata("Sensor" + str(i),float(sensorAcq[0]),float(sensorAcq[1]),float(sensorAcq[2]),value_dict,sensor_dict)
+					something.setvaluesdict()
+					something.setsensordict()
+					# something.printsensordict()
 					i+=1
 				json_dict = json.dumps(sensor_dict,indent = 2)
-				print(type(json_dict))
+				# print(type(json_dict))
 				json_file = open("test.json","a")
 				json.dump(json_dict,json_file,indent = 2)
 				json_file.write("\n")
 				time.sleep(2)
 		except Exception as ex:
-			print("done")
-			json_file.close()
 			print(str(ex))
-
-	@staticmethod
-	def sensor_key(i,num,sensor_dict,val_dict,index,accl_dict,gyro_dict,grav_dict,vect_dict,magnet_dict,linaccel_dict,baro_dict):
-		if(i == 1):
-			name = "Accelerometer"
-			key = HIMUServer.sensor_val(name,index)
-			accl_dict[key] = float(num)
-			sensor_dict[name] = accl_dict
-		elif(i==2):
-			name = "Gyroscope"
-			key = HIMUServer.sensor_val(name,index)
-			gyro_dict[key] = float(num)
-			sensor_dict[name] = gyro_dict
-		elif(i==3):
-			name = "Gravity"
-			key = HIMUServer.sensor_val(name,index)
-			grav_dict[key] = float(num)
-			sensor_dict[name] = grav_dict
-		elif(i==4):
-			name = "Linear Acceleration"
-			key = HIMUServer.sensor_val(name,index)
-			linaccel_dict[key] = float(num)
-			sensor_dict[name] = linaccel_dict
-		elif(i==5):
-			name = "Rotation Vector"
-			key = HIMUServer.sensor_val(name,index)
-			vect_dict[key] = float(num)
-			sensor_dict[name] = vect_dict
-		elif(i==6):
-			name = "Magnetometer"
-			key = HIMUServer.sensor_val(name,index)
-			magnet_dict[key] = float(num)
-			sensor_dict[name] = magnet_dict
-		return sensor_dict
-
-	@staticmethod
-	def sensor_val(name,i):
-		key = ""
-		if(i == 0):
-			key = name + ".X"
-		elif(i ==1):
-			key = name + ".Y"
-		elif(i==2):
-			key = name + ".Z"
-		return key
-
 				
 	def __extractSensorData (self, dataString):		
 		'''
@@ -216,10 +177,10 @@ class HIMUServer:
 						retVal.append(packVal)
 				except Exception as ex:
 					pass
+
 		return retVal
 
-
-	def start(self, protocol, arg):
+	def start(self , protocol, arg):
 		'''
 		Executes the data acquisition;
 		<protocol> 	the supported protocol: 'UDP' , 'TCP' , 'FILE' o 'RAW'
@@ -227,12 +188,14 @@ class HIMUServer:
 		'''
 		print('protocol: ' + protocol)
 		try:
-			if protocol == 'JSON':
-				self.executeTCP(int(arg))
-			elif protocol == 'TCP':
-				self.executeTCP(int(arg))
+			if protocol == 'RAW':
+				self.executeRAW(int(arg))
 			elif protocol == 'UDP':
 				self.executeUDP(int(arg))
+			elif protocol == 'TCP':
+				self.executeTCP(int(arg))
+			elif protocol == 'FILE':
+				self.executeFile(arg)
 		except Exception as ex:
 			print(str(ex))
 			

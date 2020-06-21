@@ -47,17 +47,13 @@ myHIMUServer.addListener(myListener)
 
 
 #Change the timeout (in seconds) :
-myHIMUServer.timeout = 10
-
-
-# Launch acquisition via JSON on port 2055:
-# myHIMUServer.start("JSON",2055)
+myHIMUServer.timeout = 2
 
 #Launch acquisition via TCP on port 2055:
 myHIMUServer.start("TCP", 2055)
 
-# #Launch acquisition via UDP on port 2055:
+#Launch acquisition via UDP on port 2055:
 myHIMUServer.start("UDP", 2055)
 
-# #Launch acquisition from local file:
-# myHIMUServer.start("FILE", "HIMU-filetest.csv")
+#Launch acquisition from local file:
+myHIMUServer.start("FILE", "HIMU-filetest.csv")
