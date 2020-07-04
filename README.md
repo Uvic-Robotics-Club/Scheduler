@@ -22,7 +22,7 @@ Then, when `Scheduler.run()` is called on the scheduler instance,this creates an
 
 The `Scheduler` class in scheduler.py is executed and interacted with the help of those 2 main threads. This is illustrated in the following sequence diagram.
 
-![Scheduler Sequence Diagram](images/scheduler_sequence_diagram.png)
+![Scheduler Sequence Diagram](https://github.com/Uvic-Robotics-Club/Administrative/blob/master/wiki_images/scheduler_diagrams/scheduler_sequence_diagram.png)
 
 It is helpful to imagine that those two threads both control the flow of execution of the class, using only `poll_loop()` and `event_loop()`. By sharing resources and interacting with the task priority queue (`pq`), they fulfill the purpose of the scheduler.
 
@@ -36,7 +36,7 @@ It is helpful to begin understanding the behavior of `Scheduler` by following _T
 
 On the other hand, _Thread 2_ handles the actual execution of each task that has been pushed in `self.pq`, as it continuously fetches any functions that are in `pq`. After fetching a function from it, it starts a thread for **each** function. However, if the number of threads exceeds the maximum number defined in `self.maxThreads`, then the thread will keep checking until there are a small enough number of active threads to start a new thread.
 
-![Scheduler Example Diagram](images/scheduler_example.png)
+![Scheduler Example Diagram](https://github.com/Uvic-Robotics-Club/Administrative/blob/master/wiki_images/scheduler_diagrams/scheduler_example.png)
 
 # Usage
 
@@ -93,7 +93,7 @@ This architecture allows us to notify the dependents (a.k.a. observers) of the s
 
 Below is a diagram representing that pattern:
 
-![Scheduler observer pattern](images/scheduler_observer_pattern.png)
+![Scheduler observer pattern](https://github.com/Uvic-Robotics-Club/Administrative/blob/master/wiki_images/scheduler_diagrams/scheduler_observer_pattern.png)
 
 # Reasons for Development
 
