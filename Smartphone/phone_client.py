@@ -17,10 +17,10 @@ class SmartphoneListener:
         '''
         name = ""
         sensor_dict = {}
-        SENSOR_NAME = ["Timestamp","Accelerometer","Magnetometer","Gyroscope","Gravity","Linear Acceleration","Rotation Vector","GPS"] #for model Huawei P20Pro
+        SENSOR_NAME = ["Accelerometer","Magnetometer","Gyroscope","Gravity","Linear Acceleration","Rotation Vector","GPS"] #for model Huawei P20Pro
         #can create another SENSOR_NAME list for another smartphone
         try:
-            for sensor_data_list in sensorData: #should understand what ytpe of data structure is being passed through as "sensorData" to this method
+            for sensor_data_list in sensorData:
                 sensor_name_index = 0
                 sensor_name = SENSOR_NAME[sensor_name_index]
                 sensor_dict[sensor_name] = {}
@@ -33,8 +33,8 @@ class SmartphoneListener:
                     else:
                         sensor_dict[sensor_name] = {"x":float(sensorAcq[0]),"y":float(sensorAcq[1]),"z":float(sensorAcq[2])}
                     sensor_name_index+= 1
-                json_dict = json.dumps(sensor_dict,indent = 2) #indent here provides horizontal indent
-                json_file = open("test89.json","a")
+                json_dict = json.dumps(sensor_dict,indent = 2) #indent here provides horizontal indent when writing data to the file
+                json_file = open("output.json","a")
                 json.dump(json_dict,json_file,indent = 2) #provides horizontal indent when writing json_object to file
                 json_file.write("\n")
         except Exception as err:
