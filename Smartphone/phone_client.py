@@ -2,7 +2,7 @@ from HIMUServer.HIMUServer import HIMUServer
 import json
 
 
-SENSOR_NAME = ["Accelerometer","Magnetometer","Gyroscope","Gravity","Linear Acceleration","Rotation Vector","GPS"] #for model Huawei P20 Pro
+SENSOR_NAME = ["Timestamp","Accelerometer","Magnetometer","Gyroscope","Gravity","Linear Acceleration","Rotation Vector","GPS"] #for model Huawei P20 Pro
 #can create another SENSOR_NAME list for another smartphone
 
 
@@ -25,14 +25,16 @@ class SmartphoneListener:
                 sensor_dict[sensor_name] = {}
                 for sensor  in sensor_packet_list:
                     sensor_name = SENSOR_NAME[sensor_name_index]
-                    if sensor_name == "GPS":
-                        sensor_dict[sensor_name] = {"lat":float(sensor[0]),"long":float(sensor[1]),"alt":float(sensor[2])}
+                    if sensor_name == "Timestamp":
+                        sensor_dict["Timestamp"] = {"Timestamp": float(sensor[0])}
+                    elif sensor_name == "GPS":
+                        sensor_dict["GPS"] = {"lat":float(sensor[0]),"long":float(sensor[1]),"alt":float(sensor[2])}
                     else:
                         sensor_dict[sensor_name] = {"x":float(sensor[0]),"y":float(sensor[1]),"z":float(sensor[2])}
                     sensor_name_index+= 1
-                json_dict = json.dumps(sensor_dict,indent = 2) #indent here provides horizontal indent when writing data to the file
+                json_dict = json.dumps(sensor_dict) #indent here provides horizontal indent when writing data to the file
                 json_file = open("output.json","a")
-                json.dump(json_dict,json_file,indent = 2) #provides horizontal indent when writing json_object to file
+                json.dump(json_dict,json_file) #provides horizontal indent when writing json_object to file
                 json_file.write("\n")
         except Exception as err:
             print(str(err))

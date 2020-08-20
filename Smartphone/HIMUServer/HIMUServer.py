@@ -28,6 +28,7 @@
 import socket
 import math
 import traceback
+from extractSensorData import extract_SensorData_v2
 
 valuesPerSensor = 3
 
@@ -79,7 +80,7 @@ class HIMUServer:
 		while self.go:
 			[data,attr] = UDPSocket.recvfrom(self.bufferSize)
 			if not data: break
-			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
+			self.__notifyListeners(extract_SensorData_v2(data.decode("utf-8")))
 		UDPSocket.close()
 
 	def executeTCP(self , port):
@@ -98,7 +99,7 @@ class HIMUServer:
 		while self.go:
 			data = connection.recv(self.bufferSize)
 			if not data: break
-			self.__notifyListeners(self.__extractSensorData(data.decode("utf-8")))
+			self.__notifyListeners(extract_SensorData_v2(data.decode("utf-8")))
 		connection.close()		
 
 	def executeFile(self , fileName):
