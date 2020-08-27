@@ -33,11 +33,13 @@ class SmartphoneListener:
                         sensor_dict[sensor_name] = {"x":float(sensor[0]),"y":float(sensor[1]),"z":float(sensor[2])}
                     sensor_name_index+= 1
                 json_dict = json.dumps(sensor_dict) #indent here provides horizontal indent when writing data to the file
-                json_file = open("output.json","a")
+                json_file = open("Smartphone/phone_sensor_data.json","a")
                 json.dump(json_dict,json_file) #provides horizontal indent when writing json_object to file
                 json_file.write("\n")
         except Exception as err:
-            print(str(err))
+            pass
+            # Below statement commented because of errors are smartphone not sending enough sensor_values to console, no effect on performance(anything)
+            #print(str(err))
 #HIMUServer Instance
 myHIMUServer = HIMUServer()
 
