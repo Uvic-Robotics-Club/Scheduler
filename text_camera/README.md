@@ -5,11 +5,11 @@ Note: Need to use C++11 or later (cmakelists takes care of this)
 [tesseract github](https://github.com/tesseract-ocr/tesseract)
 ## Installation
 
-###Tesseract
+### Tesseract
 - On the tesseract github there is a section ['Installing Tesseract'](https://tesseract-ocr.github.io/tessdoc/Home.html) 
 for your os
 
-###OpenCv
+### OpenCv
 - [Computer Vision wiki](https://github.com/Uvic-Robotics-Club/Administrative/wiki/Computer-Vision)
 
 ## Usage
