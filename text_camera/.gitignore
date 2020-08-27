@@ -1,0 +1,6 @@
+*
+!.gitignore
+!CMakelists.txt
+!main.cpp
+!main.h
+!README.md
