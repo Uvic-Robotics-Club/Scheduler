@@ -2,3 +2,4 @@ streamer.py
 viewer.py
 *.mp4
 *.png
+*.xml
