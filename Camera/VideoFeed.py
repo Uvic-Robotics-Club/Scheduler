@@ -93,8 +93,14 @@ class VideoFeed:
         source = cv2.imdecode(frame, 1)
         return source
 
+
+
 # Consumer
 class OutputFeed:
+
+    def __init__(self,qVideo):
+
+        self.qVideo = qVideo
 
     def decode_cv(self,frame):
         source = cv2.imdecode(frame, 1)
@@ -102,9 +108,13 @@ class OutputFeed:
 
     def on_event(self,buffer):
         decoded_frames = self.decode_cv(buffer)
-        qVideo.put(decoded_frames)
+        self.qVideo.put(decoded_frames)
 
 
+
+
+
+#demo
 def main():
     # Initialize list of functions to poll
 
