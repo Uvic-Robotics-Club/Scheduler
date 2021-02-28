@@ -9,7 +9,7 @@ dictionary = aruco.Dictionary_get(cv.aruco.DICT_5X5_250)
 markerImg = np.zeros((100,100))
 
 #draw marker on blank matrix
-markerImg = aruco.drawMarker(dictionary,20,50, markerImg, 1)
+markerImg = aruco.drawMarker(dictionary,13,50, markerImg, 1)
 
 #save marker
 cv.imwrite("marker13.png",markerImg)
