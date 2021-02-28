@@ -1,11 +1,17 @@
 import cv2 as cv
 import numpy as np
+from cv2 import aruco 
 
-dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_5X5_250)
+#define Aruco Dictionary
+dictionary = aruco.Dictionary_get(cv.aruco.DICT_5X5_250)
 
-markerImg = np.zeros((200,200),dtype="uint8")
-markerImg = cv.aruco.drawMarker(dictionary,13,200, markerImg, 1)
+#set up blank matrix
+markerImg = np.zeros((400,400),dtype="uint8")
 
-cv.imwrite("marker33.png",markerImg)
+#draw marker on blank matrix
+markerImg = aruco.drawMarker(dictionary,13,200, markerImg, 1)
+
+#save marker
+cv.imwrite("marker13.png",markerImg)
 
  
